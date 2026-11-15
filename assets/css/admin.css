@@ -1,0 +1,148 @@
+.nlwp-settings .nlwp-panel {
+	max-width: 1100px;
+	margin-top: 1.25rem;
+	padding: 0.5rem 1.25rem 1rem;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+
+.nlwp-settings .nlwp-panel h2 {
+	margin-top: 1.5rem;
+	padding-bottom: 0.35rem;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.nlwp-settings .nlwp-panel h2:first-child {
+	margin-top: 0.75rem;
+}
+
+.nlwp-settings .nlwp-string-table th,
+.nlwp-settings .nlwp-string-table td,
+.nlwp-settings .nlwp-language-table th,
+.nlwp-settings .nlwp-language-table td,
+.nlwp-settings .nlwp-category-table th,
+.nlwp-settings .nlwp-category-table td {
+	vertical-align: middle;
+}
+
+.nlwp-settings .nlwp-string-table input,
+.nlwp-settings .nlwp-string-table textarea {
+	width: 100%;
+	min-width: 8rem;
+}
+
+.nlwp-settings .nlwp-language-table input {
+	max-width: 100%;
+}
+
+.nlwp-settings .nlwp-language-new {
+	background: #f6f7f7;
+}
+
+.nlwp-settings .nlwp-string-key code {
+	color: #646970;
+	font-size: 11px;
+}
+
+.nlwp-settings .nlwp-color-table input[type="color"] {
+	width: 3rem;
+	height: 1.9rem;
+	padding: 0;
+	vertical-align: middle;
+}
+
+.nlwp-translation {
+	margin: 0 0 1.25rem;
+	padding: 0.5rem 1rem 1rem;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.nlwp-translation legend {
+	padding: 0 0.4rem;
+	font-weight: 600;
+}
+
+.nlwp-translation p {
+	margin: 0.75rem 0 0;
+}
+
+.nlwp-translation label {
+	display: block;
+	margin-bottom: 0.25rem;
+	font-weight: 500;
+}
+
+.nlwp-event-checklist {
+	max-height: 18rem;
+	overflow: auto;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.nlwp-event-choice {
+	display: flex;
+	align-items: baseline;
+	gap: 0.4rem;
+	padding: 0.3rem 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.nlwp-event-choice:last-child {
+	border-bottom: 0;
+}
+
+.nlwp-event-choice-title {
+	font-weight: 500;
+}
+
+.nlwp-event-choice-date {
+	margin-left: auto;
+	color: #646970;
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.nlwp-manual-events.is-disabled .nlwp-event-checklist {
+	opacity: 0.55;
+}
+
+.nlwp-media-field {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.nlwp-media-preview {
+	min-width: 3rem;
+	min-height: 2rem;
+	display: flex;
+	align-items: center;
+}
+
+.nlwp-media-thumb {
+	max-width: 4rem;
+	height: auto;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+}
+
+.nlwp-media-filename,
+.nlwp-media-empty {
+	color: #646970;
+	font-size: 12px;
+}
+
+.nlwp-field-label {
+	display: block;
+	width: 100%;
+	font-weight: 600;
+}
+
+.nlwp-settings .notice {
+	margin-left: 0;
+}

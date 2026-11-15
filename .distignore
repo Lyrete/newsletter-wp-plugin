@@ -1,0 +1,25 @@
+# Development and repository files that must not ship in the plugin zip.
+.git
+.github
+.gitignore
+.gitattributes
+.distignore
+bin
+build
+dist
+tests
+node_modules
+vendor
+composer.json
+composer.lock
+package.json
+package-lock.json
+yarn.lock
+phpunit.xml
+phpunit.xml.dist
+phpcs.xml
+phpcs.xml.dist
+*.zip
+*.log
+.DS_Store
+.gitkeep

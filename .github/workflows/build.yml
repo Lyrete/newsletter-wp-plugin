@@ -1,0 +1,105 @@
+name: Build plugin zip
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Validate and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+
+      - name: Lint PHP
+        run: |
+          find . -name '*.php' -not -path './vendor/*' -print0 \
+            | xargs -0 -n1 php -l
+
+      - name: Check JavaScript syntax
+        run: |
+          find . -name '*.js' -not -path './node_modules/*' -print0 \
+            | xargs -0 -n1 node --check
+
+      - name: Validate JSON
+        run: |
+          find . -name '*.json' -not -path './node_modules/*' -print0 \
+            | xargs -0 -n1 php -r '
+              json_decode(file_get_contents($argv[1]));
+              if (json_last_error() !== JSON_ERROR_NONE) {
+                  fwrite(STDERR, "Invalid JSON: " . $argv[1] . PHP_EOL);
+                  exit(1);
+              }
+            '
+
+      - name: Validate tag version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          header="$(sed -n 's/^[[:space:]]*\*[[:space:]]*Version:[[:space:]]*//p' newsletter-wp-plugin.php | head -n1)"
+          stable="$(sed -n 's/^Stable tag:[[:space:]]*//p' readme.txt | head -n1)"
+
+          if [ "$tag" != "$header" ]; then
+            echo "Tag version '$tag' does not match plugin Version '$header'." >&2
+            exit 1
+          fi
+
+          if [ "$tag" != "$stable" ]; then
+            echo "Tag version '$tag' does not match readme Stable tag '$stable'." >&2
+            exit 1
+          fi
+
+      - name: Build plugin zip
+        run: bash bin/build-zip.sh
+
+      - name: Verify zip structure
+        run: |
+          unzip -l dist/newsletter-wp-plugin.zip | grep -q 'newsletter-wp-plugin/newsletter-wp-plugin.php'
+
+          if unzip -l dist/newsletter-wp-plugin.zip | grep -Eq 'newsletter-wp-plugin/(\.git|\.github|bin|dist)/'; then
+            echo "The plugin zip contains development files." >&2
+            exit 1
+          fi
+
+      - name: Upload plugin zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: newsletter-wp-plugin
+          path: dist/newsletter-wp-plugin.zip
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download plugin zip
+        uses: actions/download-artifact@v4
+        with:
+          name: newsletter-wp-plugin
+          path: dist
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/newsletter-wp-plugin.zip
+          generate_release_notes: true
