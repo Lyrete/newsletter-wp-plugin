@@ -77,7 +77,8 @@ jobs:
         run: |
           unzip -l dist/newsletter-wp-plugin.zip | grep -q 'newsletter-wp-plugin/newsletter-wp-plugin.php'
 
-          if unzip -l dist/newsletter-wp-plugin.zip | grep -Eq 'newsletter-wp-plugin/(\.git|\.github|bin|dist)/'; then
+          if unzip -l dist/newsletter-wp-plugin.zip \
+            | grep -Eq 'newsletter-wp-plugin/(\.git|\.github|bin|dist|docker|tests)/|newsletter-wp-plugin/(\.env|\.env\.example|docker-compose[^/]*\.yml|README\.md)$'; then
             echo "The plugin zip contains development files." >&2
             exit 1
           fi

@@ -2,7 +2,7 @@
 Contributors: newsletterpublisher
 Tags: newsletter, events, multilingual, gutenberg, shortcode
 Requires at least: 6.4
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 8.5
 Stable tag: 0.1.0
 License: GPLv2 or later
