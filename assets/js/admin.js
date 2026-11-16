@@ -63,4 +63,87 @@
 
 	$( toggleManualEvents );
 	$( document ).on( 'change', 'input[name="nlwp_selection_mode"]', toggleManualEvents );
+
+	function copyText( text ) {
+		if ( navigator.clipboard && navigator.clipboard.writeText ) {
+			return navigator.clipboard.writeText( text );
+		}
+
+		return new Promise( function ( resolve, reject ) {
+			var $temp = $( '<textarea>' ).val( text ).css( {
+				position: 'fixed',
+				top: '-1000px',
+				opacity: '0'
+			} ).appendTo( 'body' );
+
+			$temp[ 0 ].select();
+
+			try {
+				var ok = document.execCommand( 'copy' );
+				$temp.remove();
+				ok ? resolve() : reject( new Error( 'copy failed' ) );
+			} catch ( error ) {
+				$temp.remove();
+				reject( error );
+			}
+		} );
+	}
+
+	$( document ).on( 'click', '.nlwp-copy', function ( event ) {
+		event.preventDefault();
+
+		var $button = $( this );
+		var target = $button.data( 'target' );
+		var $field = target ? $( target ) : $button.closest( '.nlwp-email-preview' ).find( '.nlwp-preview-text' );
+
+		if ( ! $field.length ) {
+			return;
+		}
+
+		var original = $button.text();
+
+		copyText( $field.val() ).then( function () {
+			$button.text( strings.copied || 'Copied' );
+			window.setTimeout( function () {
+				$button.text( original );
+			}, 1500 );
+		} ).catch( function () {
+			window.alert( strings.copyFailed || 'Copy failed.' );
+		} );
+	} );
+
+	$( document ).on( 'click', '.nlwp-download', function ( event ) {
+		event.preventDefault();
+
+		var $button = $( this );
+		var target = $button.data( 'target' );
+		var $field = target ? $( target ) : $button.closest( '.nlwp-email-preview' ).find( '.nlwp-preview-text' );
+
+		if ( ! $field.length ) {
+			return;
+		}
+
+		try {
+			var blob = new Blob( [ $field.val() ], {
+				type: $button.data( 'mime' ) || 'text/plain;charset=utf-8'
+			} );
+			var url = URL.createObjectURL( blob );
+			var $link = $( '<a>' ).attr( {
+				href: url,
+				download: $button.data( 'filename' ) || 'newsletter.txt'
+			} ).appendTo( 'body' );
+
+			$link[ 0 ].click();
+			$link.remove();
+			URL.revokeObjectURL( url );
+		} catch ( error ) {
+			window.alert( strings.downloadFailed || 'Download failed.' );
+		}
+	} );
+
+	$( document ).on( 'click', '.nlwp-send-email', function ( event ) {
+		if ( ! window.confirm( strings.confirmSend || strings.confirm || 'Send this newsletter?' ) ) {
+			event.preventDefault();
+		}
+	} );
 }( jQuery ) );

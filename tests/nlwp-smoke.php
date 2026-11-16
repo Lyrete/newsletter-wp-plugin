@@ -376,6 +376,172 @@ $fixed_fi = do_shortcode( '[nlwp_newsletter issue_id="' . $issue_id . '" display
 t_contains( 'fixed title fi', $fixed_fi, 'Tiedote' );
 update_option( \NLWP\Settings::OPTION, $settings );
 
+// ---------------------------------------------------------------- email settings and rendering.
+$email_settings = $settings;
+$email_settings['email']['from_name']  = 'Newsletter Test';
+$email_settings['email']['from_email'] = 'newsletter@example.test';
+$email_settings['email']['reply_to']   = 'reply@example.test';
+$email_settings['email']['format']     = 'plain';
+$email_settings['email']['formatting'] = array(
+	'languages'                    => array( 'en', 'fi' ),
+	'primary_language'             => 'en',
+	'title_layout'                 => 'block',
+	'title_separator'              => ' | ',
+	'title_labels'                 => true,
+	'label_format'                 => 'code',
+	'description_separator'        => 'custom',
+	'description_custom_separator' => '---',
+	'description_labels'           => true,
+);
+$email_settings['strings']['email_header'] = array( 'en' => 'Header EN', 'fi' => 'Header FI' );
+$email_settings['strings']['email_footer'] = array( 'en' => 'Footer EN', 'fi' => 'Footer FI' );
+update_option( \NLWP\Settings::OPTION, $email_settings );
+$email_settings = \NLWP\Settings::get_settings();
+
+t_check( 'email settings defaults normalized', 'plain' === $email_settings['email']['format'] && 'Newsletter Test' === $email_settings['email']['from_name'] );
+t_check( 'email header string saved', 'Header EN' === ( $email_settings['strings']['email_header']['en'] ?? '' ) );
+
+delete_post_meta( $issue_id, \NLWP\Email_Renderer::META_FORMATTING );
+delete_post_meta( $issue_id, '_nlwp_email_subject' );
+
+$formatting = \NLWP\Email_Renderer::formatting( $issue_id, $email_settings );
+t_check( 'email formatting inherits settings', array( 'en', 'fi' ) === $formatting['languages'] && 'en' === $formatting['primary_language'] );
+t_check( 'email formatting custom separator', 'custom' === $formatting['description_separator'] && '---' === $formatting['description_custom_separator'] );
+
+$fallback_formatting = \NLWP\Email_Renderer::sanitize_formatting( array( 'primary_language' => 'fi', 'languages' => array() ), $email_settings );
+t_check( 'email empty languages fall back to primary', array( 'fi' ) === $fallback_formatting['languages'] && 'fi' === $fallback_formatting['primary_language'] );
+
+$plain = \NLWP\Email_Renderer::message( $issue_id, 'plain', $email_settings );
+$html  = \NLWP\Email_Renderer::message( $issue_id, 'html', $email_settings );
+
+t_check( 'email subject uses primary issue title', 'November issue' === $plain['subject'], $plain['subject'] );
+t_check( 'email plain format', 'plain' === $plain['format'] && 'html' === $html['format'] );
+t_contains( 'email header primary language', $plain['body'], 'Header EN' );
+t_contains( 'email footer primary language', $plain['body'], 'Footer EN' );
+t_not_contains( 'email header omits secondary language', $plain['body'], 'Header FI' );
+t_contains( 'email title label en', $plain['body'], 'en: November issue' );
+t_contains( 'email title label fi', $plain['body'], 'fi: Marraskuun numero' );
+t_contains( 'email date label and value', $plain['body'], 'Date: 13.11.2026' );
+t_contains( 'email category labels', $plain['body'], 'en: Guild events' );
+t_contains( 'email category label fi', $plain['body'], 'fi: Kilta' );
+t_contains( 'email event title en', $plain['body'], 'en: Autumn meeting' );
+t_contains( 'email event title fi', $plain['body'], 'fi: Syyskokous' );
+t_contains( 'email event description fi', $plain['body'], 'fi: Tapaa kilta.' );
+t_contains( 'email custom description separator', $plain['body'], '---' );
+t_contains( 'email autolink text preserved', $plain['body'], 'https://example.test' );
+t_not_contains( 'email plain has no paragraph tags', $plain['body'], '<p>' );
+t_contains( 'email html has heading', $html['body'], '<h1>' );
+t_contains( 'email html has event heading', $html['body'], '<h3>' );
+t_not_contains( 'email html has no tables', $html['body'], '<table' );
+t_not_contains( 'email html has no images', $html['body'], '<img' );
+t_not_contains( 'email html has no scripts', $html['body'], '<script' );
+t_check( 'email export matches message', \NLWP\Email_Renderer::export( $issue_id, 'plain', $email_settings ) === $plain['body'] );
+
+update_post_meta( $issue_id, '_nlwp_email_subject', 'Custom subject' );
+t_check( 'email subject meta override', 'Custom subject' === \NLWP\Email_Renderer::subject( $issue_id, $email_settings ) );
+delete_post_meta( $issue_id, '_nlwp_email_subject' );
+
+// Per-issue formatting override.
+update_post_meta(
+	$issue_id,
+	\NLWP\Email_Renderer::META_FORMATTING,
+	wp_slash(
+		array(
+			'languages'        => array( 'fi' ),
+			'primary_language' => 'fi',
+		)
+	)
+);
+$fi_formatting = \NLWP\Email_Renderer::formatting( $issue_id, $email_settings );
+t_check( 'per-issue formatting overrides languages', array( 'fi' ) === $fi_formatting['languages'] && 'fi' === $fi_formatting['primary_language'] );
+$fi_plain = \NLWP\Email_Renderer::message( $issue_id, 'plain', $email_settings );
+t_check( 'per-issue primary language drives subject', 'Marraskuun numero' === $fi_plain['subject'], $fi_plain['subject'] );
+t_contains( 'per-issue language keeps translated event', $fi_plain['body'], 'Syyskokous' );
+t_contains( 'per-issue language falls back for untranslated event', $fi_plain['body'], 'Live concert' );
+delete_post_meta( $issue_id, \NLWP\Email_Renderer::META_FORMATTING );
+
+// ---------------------------------------------------------------- email sender.
+t_check( 'parse recipients', array( 'a@example.test', 'b@example.test', 'c@example.test' ) === \NLWP\Email_Sender::parse_recipients( "a@example.test, b@example.test; c@example.test bad" ) );
+t_check( 'sender from helpers', 'newsletter@example.test' === \NLWP\Email_Sender::from_email( $email_settings ) && 'Newsletter Test' === \NLWP\Email_Sender::from_name( $email_settings ) );
+t_check( 'sender reply-to helper', 'reply@example.test' === \NLWP\Email_Sender::reply_to( $email_settings ) );
+t_check( 'sender neutral to uses from email', 'newsletter@example.test' === \NLWP\Email_Sender::neutral_to( $email_settings ) );
+
+update_post_meta( $issue_id, '_nlwp_email_recipients', "one@example.test\ntwo@example.test" );
+t_check( 'saved recipients parsed', array( 'one@example.test', 'two@example.test' ) === \NLWP\Email_Sender::recipients( $issue_id ) );
+
+$GLOBALS['nlwp_mail'] = array();
+$capture_mail         = static function ( $return, $atts ) {
+	$GLOBALS['nlwp_mail'][] = $atts;
+	return true;
+};
+add_filter( 'pre_wp_mail', $capture_mail, 10, 2 );
+
+\NLWP\Email_Sender::clear_lock( $issue_id );
+$send_result = \NLWP\Email_Sender::send( $issue_id );
+t_check( 'sender reports success', ! empty( $send_result['success'] ), (string) ( $send_result['message'] ?? '' ) );
+t_check( 'wp_mail called once', 1 === count( $GLOBALS['nlwp_mail'] ) );
+t_check( 'last send meta saved', '' !== (string) get_post_meta( $issue_id, '_nlwp_email_last_send', true ) );
+
+$captured = $GLOBALS['nlwp_mail'][0] ?? array();
+$headers  = isset( $captured['headers'] ) && is_array( $captured['headers'] ) ? implode( "\n", $captured['headers'] ) : (string) ( $captured['headers'] ?? '' );
+t_check( 'sender uses neutral to', 'newsletter@example.test' === ( $captured['to'] ?? '' ), (string) ( $captured['to'] ?? '' ) );
+t_contains( 'sender subject', (string) ( $captured['subject'] ?? '' ), 'November issue' );
+t_contains( 'sender bcc recipients', $headers, 'Bcc: one@example.test, two@example.test' );
+t_contains( 'sender content type plain', $headers, 'Content-Type: text/plain' );
+t_contains( 'sender reply-to header', $headers, 'Reply-To: reply@example.test' );
+t_contains( 'sender body content', (string) ( $captured['message'] ?? '' ), 'Autumn meeting' );
+
+$locked_result = \NLWP\Email_Sender::send( $issue_id );
+t_check( 'duplicate send lock', empty( $locked_result['success'] ) && 1 === count( $GLOBALS['nlwp_mail'] ) );
+\NLWP\Email_Sender::clear_lock( $issue_id );
+
+// HTML sending format.
+$html_settings = $email_settings;
+$html_settings['email']['format'] = 'html';
+update_option( \NLWP\Settings::OPTION, $html_settings );
+$GLOBALS['nlwp_mail'] = array();
+\NLWP\Email_Sender::clear_lock( $issue_id );
+$html_send_result = \NLWP\Email_Sender::send( $issue_id );
+$html_captured    = $GLOBALS['nlwp_mail'][0] ?? array();
+$html_headers     = isset( $html_captured['headers'] ) && is_array( $html_captured['headers'] ) ? implode( "\n", $html_captured['headers'] ) : (string) ( $html_captured['headers'] ?? '' );
+t_check( 'sender html success', ! empty( $html_send_result['success'] ), (string) ( $html_send_result['message'] ?? '' ) );
+t_contains( 'sender content type html', $html_headers, 'Content-Type: text/html' );
+t_contains( 'sender html body', (string) ( $html_captured['message'] ?? '' ), '<h1>' );
+update_option( \NLWP\Settings::OPTION, $email_settings );
+\NLWP\Email_Sender::clear_lock( $issue_id );
+
+$GLOBALS['nlwp_mail'] = array();
+$test_result = \NLWP\Email_Sender::send_test( $issue_id, 'test@example.test' );
+t_check( 'test send reports success', ! empty( $test_result['success'] ), (string) ( $test_result['message'] ?? '' ) );
+$test_captured = $GLOBALS['nlwp_mail'][0] ?? array();
+t_check( 'test send targets one address', 'test@example.test' === ( $test_captured['to'] ?? '' ) );
+t_contains( 'test subject prefix', (string) ( $test_captured['subject'] ?? '' ), '[Test] November issue' );
+t_check( 'last test meta saved', '' !== (string) get_post_meta( $issue_id, '_nlwp_email_last_test', true ) );
+
+$bad_test = \NLWP\Email_Sender::send_test( $issue_id, 'not-an-email' );
+t_check( 'test send rejects invalid address', empty( $bad_test['success'] ) );
+
+remove_filter( 'pre_wp_mail', $capture_mail, 10 );
+\NLWP\Email_Sender::clear_lock( $issue_id );
+
+// ---------------------------------------------------------------- email admin screen.
+$_GET['page']     = \NLWP\Admin_Email::PAGE;
+$_GET['issue_id'] = $issue_id;
+ob_start();
+\NLWP\Admin_Email::render();
+$admin_email_html = (string) ob_get_clean();
+
+t_contains( 'email admin compose form', $admin_email_html, 'nlwp-email-form' );
+t_contains( 'email admin send button', $admin_email_html, 'nlwp-send-email' );
+t_contains( 'email admin recipients field', $admin_email_html, 'one@example.test' );
+t_contains( 'email admin plain preview', $admin_email_html, 'nlwp-preview-plain' );
+t_contains( 'email admin html preview', $admin_email_html, 'nlwp-preview-html' );
+t_contains( 'email admin copy button', $admin_email_html, 'nlwp-copy' );
+t_contains( 'email admin download button', $admin_email_html, 'nlwp-download' );
+t_contains( 'email admin smtp notice', $admin_email_html, 'wp_mail()' );
+t_contains( 'email admin compose url', \NLWP\Admin_Email::url( $issue_id ), 'page=' . \NLWP\Admin_Email::PAGE );
+unset( $_GET['issue_id'], $_GET['page'] );
+
 // ---------------------------------------------------------------- summary.
 echo "\n{$GLOBALS['checks']} checks, {$GLOBALS['failures']} failures\n";
 if ( $GLOBALS['failures'] > 0 ) {

@@ -52,6 +52,7 @@ class Plugin {
 		Admin_Translations::init();
 		Admin_Events::init();
 		Admin_Issues::init();
+		Admin_Email::init();
 		Shortcode::init();
 		Block::init();
 

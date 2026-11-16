@@ -79,10 +79,25 @@ class Renderer {
 		$show_title = null === $args['show_title'] ? true : (bool) $args['show_title'];
 		$show_intro = null === $args['show_intro'] ? ! empty( $settings['show_intro'] ) : (bool) $args['show_intro'];
 
+		$context = Content::web_context( $current_lang, $field_mode );
+
+		$site_event_fields = 'site' === $field_mode( 'event_titles' ) || 'site' === $field_mode( 'event_descriptions' );
+		$context['hide_untranslated_lang'] = ( ! empty( $settings['hide_untranslated_events'] ) && $site_event_fields && $current_lang !== Languages::default_code() )
+			? $current_lang
+			: '';
+
 		$title_html = '';
 		if ( $show_title ) {
 			if ( 'issue' === $settings['title_source'] ) {
-				$title_html = self::field_html( $issue_id, 'title', $field_mode( 'issue_title' ), $current_lang, $settings, true, false );
+				$title_items = Content::post_field_items(
+					$issue_id,
+					'title',
+					$context['issue_title']['codes'],
+					$context['issue_title']['fallback'],
+					false,
+					$settings
+				);
+				$title_html  = self::title_stack_html( $title_items, $settings );
 			} elseif ( 'fixed' === $settings['title_source'] ) {
 				$title_html = self::setting_string_html( 'fixed_title', $current_lang, $ui_mode, $settings, true );
 			}
@@ -90,7 +105,15 @@ class Renderer {
 
 		$intro_html = '';
 		if ( $show_intro ) {
-			$intro_html = self::field_html( $issue_id, 'intro', $field_mode( 'issue_intro' ), $current_lang, $settings, false, true );
+			$intro_items = Content::post_field_items(
+				$issue_id,
+				'intro',
+				$context['issue_intro']['codes'],
+				$context['issue_intro']['fallback'],
+				true,
+				$settings
+			);
+			$intro_html  = self::text_stack_html( $intro_items, $settings );
 		}
 
 		$issue_date_html = '';
@@ -102,11 +125,11 @@ class Renderer {
 				if ( '' !== $label ) {
 					$issue_date_html .= '<span class="nlwp-issue-date-label">' . $label . '</span> ';
 				}
-				$issue_date_html .= '<time datetime="' . esc_attr( $date ) . '">' . esc_html( self::format_date( $date, $current_lang, $settings ) ) . '</time></p>';
+				$issue_date_html .= '<time datetime="' . esc_attr( $date ) . '">' . esc_html( Content::format_date( $date, $current_lang, $settings ) ) . '</time></p>';
 			}
 		}
 
-		$groups   = self::build_groups( $issue_id, $current_lang, $field_mode, $settings, $global_mode, $ui_mode );
+		$groups   = self::build_groups( $issue_id, $context, $settings );
 		$classes  = array( 'nlwp', 'nlwp-mode-' . $global_mode, 'nlwp-lang-' . $current_lang );
 		if ( ! empty( $settings['exclusive_accordion'] ) ) {
 			$classes[] = 'nlwp-exclusive';
@@ -194,200 +217,32 @@ class Renderer {
 	/**
 	 * Build grouped events for an issue.
 	 *
-	 * @param int      $issue_id     Issue ID.
-	 * @param string   $current_lang Active language.
-	 * @param callable $field_mode   Field mode resolver.
-	 * @param array    $settings     Settings.
-	 * @param string   $global_mode  Global display mode.
-	 * @param string   $ui_mode      Interface string display mode.
+	 * @param int   $issue_id Issue ID.
+	 * @param array $context  Language context.
+	 * @param array $settings Settings.
 	 * @return array
 	 */
-	private static function build_groups( int $issue_id, string $current_lang, callable $field_mode, array $settings, string $global_mode, string $ui_mode ): array {
-		$ids = nlwp_sanitize_id_array( get_post_meta( $issue_id, '_nlwp_event_ids', true ) );
+	private static function build_groups( int $issue_id, array $context, array $settings ): array {
+		$groups = Content::build_groups( $issue_id, $context, $settings );
 
-		$selection_mode = (string) get_post_meta( $issue_id, '_nlwp_selection_mode', true );
-		if ( empty( $ids ) && 'manual' !== $selection_mode ) {
-			$ids = Issue_Selection::get_auto_event_ids(
-				(string) get_post_meta( $issue_id, '_nlwp_period_start', true ),
-				(string) get_post_meta( $issue_id, '_nlwp_period_end', true )
-			);
-		}
+		foreach ( $groups as $index => $group ) {
+			$groups[ $index ]['label'] = self::category_label_html( $group['label_items'], $settings );
 
-		$ids       = Issue_Selection::sort_event_ids( $ids );
-		$grouped   = array();
-		$continuous = 0;
-		$site_event_fields = 'site' === $field_mode( 'event_titles' ) || 'site' === $field_mode( 'event_descriptions' );
-
-		foreach ( $ids as $event_id ) {
-			if ( Post_Types::EVENT !== get_post_type( $event_id ) || 'publish' !== get_post_status( $event_id ) ) {
-				continue;
-			}
-
-			if ( ! empty( $settings['hide_untranslated_events'] ) && $site_event_fields && $current_lang !== Languages::default_code() && ! Translations::has_translation( $event_id, $current_lang ) ) {
-				continue;
-			}
-
-			$term    = Issue_Selection::get_event_category_term( $event_id );
-			$term_id = $term ? (int) $term->term_id : 0;
-
-			if ( $term && '0' === (string) get_term_meta( $term_id, '_nlwp_enabled', true ) ) {
-				continue;
-			}
-
-			if ( ! isset( $grouped[ $term_id ] ) ) {
-				$grouped[ $term_id ] = array(
-					'term_id' => $term_id,
-					'label'   => self::category_label_html( $term_id, $current_lang, $field_mode( 'category_labels' ), $settings, $ui_mode ),
-					'events'  => array(),
+			foreach ( $group['events'] as $event_index => $event ) {
+				$groups[ $index ]['events'][ $event_index ] = array(
+					'id'              => $event['id'],
+					'number'          => $event['number'],
+					'title_html'      => self::title_stack_html( $event['title_items'], $settings ),
+					'description_html'=> self::text_stack_html( $event['description_items'], $settings ),
+					'date_html'       => self::event_date_html( $event['date'], $context['lang'], $settings ),
+					'attachment_html' => self::attachment_html( $event['attachment'], $settings ),
+					'open'            => $event['open'],
+					'anchor'          => $event['anchor'],
 				);
 			}
-
-			++$continuous;
-			$number = 'per_category' === $settings['numbering'] ? count( $grouped[ $term_id ]['events'] ) + 1 : $continuous;
-
-			$grouped[ $term_id ]['events'][] = self::build_event( $event_id, $current_lang, $field_mode, $settings, $number, 1 === $continuous, $global_mode, $ui_mode );
 		}
-
-		if ( ! empty( $settings['show_empty_categories'] ) && ! empty( $settings['show_categories'] ) ) {
-			$terms = get_terms(
-				array(
-					'taxonomy'   => Taxonomy::TAXONOMY,
-					'hide_empty' => false,
-				)
-			);
-
-			if ( ! is_wp_error( $terms ) ) {
-				foreach ( Issue_Selection::sort_terms( $terms ) as $term ) {
-					if ( isset( $grouped[ $term->term_id ] ) || '0' === (string) get_term_meta( $term->term_id, '_nlwp_enabled', true ) ) {
-						continue;
-					}
-					$grouped[ $term->term_id ] = array(
-						'term_id' => (int) $term->term_id,
-						'label'   => self::category_label_html( (int) $term->term_id, $current_lang, $field_mode( 'category_labels' ), $settings, $ui_mode ),
-						'events'  => array(),
-					);
-				}
-			}
-		}
-
-		$order_map = Issue_Selection::get_category_order_map();
-		$groups    = array_values( $grouped );
-
-		usort(
-			$groups,
-			static function ( $a, $b ) use ( $order_map ) {
-				if ( 0 === $a['term_id'] && 0 !== $b['term_id'] ) {
-					return 1;
-				}
-				if ( 0 !== $a['term_id'] && 0 === $b['term_id'] ) {
-					return -1;
-				}
-				$order_a = isset( $order_map[ $a['term_id'] ] ) ? (int) $order_map[ $a['term_id'] ] : 0;
-				$order_b = isset( $order_map[ $b['term_id'] ] ) ? (int) $order_map[ $b['term_id'] ] : 0;
-				if ( $order_a !== $order_b ) {
-					return $order_a <=> $order_b;
-				}
-				return strcmp( wp_strip_all_tags( $a['label'] ), wp_strip_all_tags( $b['label'] ) );
-			}
-		);
 
 		return $groups;
-	}
-
-	/**
-	 * Build one event's display data.
-	 *
-	 * @param int      $event_id     Event ID.
-	 * @param string   $current_lang Active language.
-	 * @param callable $field_mode   Field mode resolver.
-	 * @param array    $settings     Settings.
-	 * @param int      $number       Display number.
-	 * @param bool     $is_first     Whether this is the first event.
-	 * @param string   $global_mode  Global display mode.
-	 * @param string   $ui_mode      Interface string display mode.
-	 * @return array
-	 */
-	private static function build_event( int $event_id, string $current_lang, callable $field_mode, array $settings, int $number, bool $is_first, string $global_mode, string $ui_mode ): array {
-		$title = self::field_html( $event_id, 'title', $field_mode( 'event_titles' ), $current_lang, $settings, true, false );
-		$body  = self::field_html( $event_id, 'description', $field_mode( 'event_descriptions' ), $current_lang, $settings, false, true );
-
-		$show_date = get_post_meta( $event_id, '_nlwp_show_date', true );
-		$show_date = '' === $show_date ? true : '1' === (string) $show_date;
-
-		$date_html = '';
-		if ( ! empty( $settings['show_dates'] ) && $show_date ) {
-			$date_html = self::event_date_html( $event_id, $current_lang, $settings );
-		}
-
-		$open = ! empty( $settings['open_all'] ) || ( ! empty( $settings['open_first'] ) && $is_first );
-
-		return array(
-			'id'              => $event_id,
-			'number'          => ! empty( $settings['show_numbers'] ) ? $number : 0,
-			'title_html'      => $title,
-			'description_html'=> $body,
-			'date_html'       => $date_html,
-			'attachment_html' => self::attachment_html( $event_id, $current_lang, $settings, $ui_mode ),
-			'open'            => $open,
-			'anchor'          => 'nlwp-event-' . $event_id,
-		);
-	}
-
-	/**
-	 * Render a translated text field.
-	 *
-	 * @param int    $post_id      Post ID.
-	 * @param string $field        Field key.
-	 * @param string $mode         site or stacked.
-	 * @param string $current_lang Active language.
-	 * @param array  $settings     Settings.
-	 * @param bool   $is_title     Whether this is a title field.
-	 * @param bool   $allow_html   Whether HTML is allowed.
-	 * @return string
-	 */
-	private static function field_html( int $post_id, string $field, string $mode, string $current_lang, array $settings, bool $is_title, bool $allow_html ): string {
-		$codes = 'stacked' === $mode ? array_column( Languages::all( true ), 'code' ) : array( $current_lang );
-		$items = array();
-
-		foreach ( $codes as $code ) {
-			$text      = Translations::get_post_text( $post_id, $field, $code, false );
-			$text_lang = $code;
-
-			if ( 'stacked' !== $mode && '' === trim( wp_strip_all_tags( $text ) ) ) {
-				$text_lang = Languages::default_code();
-				$text      = Translations::get_post_text( $post_id, $field, $text_lang, false );
-			}
-
-			if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
-				continue;
-			}
-
-			if ( $allow_html ) {
-				$content = wp_kses_post( $text );
-				if ( ! empty( $settings['autolink'] ) ) {
-					$content = make_clickable( $content );
-				}
-			} else {
-				$content = esc_html( $text );
-			}
-
-			$items[] = array(
-				'code'    => $code,
-				'content' => $content,
-				'lang'    => $text_lang,
-				'dir'     => Languages::dir( $text_lang ),
-			);
-		}
-
-		if ( empty( $items ) ) {
-			return '';
-		}
-
-		if ( $is_title ) {
-			return self::title_stack_html( $items, $settings );
-		}
-
-		return self::text_stack_html( $items, $settings );
 	}
 
 	/**
@@ -398,8 +253,12 @@ class Renderer {
 	 * @return string
 	 */
 	private static function title_stack_html( array $items, array $settings ): string {
+		if ( empty( $items ) ) {
+			return '';
+		}
+
 		if ( 1 === count( $items ) ) {
-			return '<span class="nlwp-lang-text" lang="' . esc_attr( $items[0]['lang'] ) . '" dir="' . esc_attr( $items[0]['dir'] ) . '">' . $items[0]['content'] . '</span>';
+			return '<span class="nlwp-lang-text" lang="' . esc_attr( $items[0]['lang'] ) . '" dir="' . esc_attr( $items[0]['dir'] ) . '">' . $items[0]['html'] . '</span>';
 		}
 
 		$show_labels = ! empty( $settings['stacked']['show_labels'] );
@@ -413,7 +272,7 @@ class Renderer {
 			if ( $show_labels ) {
 				$part .= '<span class="nlwp-lang-label">' . esc_html( Languages::label( $item['code'], $format ) ) . '</span> ';
 			}
-			$part .= '<span class="nlwp-lang-text" lang="' . esc_attr( $item['lang'] ) . '" dir="' . esc_attr( $item['dir'] ) . '">' . $item['content'] . '</span>';
+			$part .= '<span class="nlwp-lang-text" lang="' . esc_attr( $item['lang'] ) . '" dir="' . esc_attr( $item['dir'] ) . '">' . $item['html'] . '</span>';
 			$parts[] = $block ? '<span class="nlwp-lang-line">' . $part . '</span>' : $part;
 		}
 
@@ -430,15 +289,19 @@ class Renderer {
 	 * @return string
 	 */
 	private static function text_stack_html( array $items, array $settings ): string {
+		if ( empty( $items ) ) {
+			return '';
+		}
+
 		if ( 1 === count( $items ) ) {
-			return '<div class="nlwp-lang-text" lang="' . esc_attr( $items[0]['lang'] ) . '" dir="' . esc_attr( $items[0]['dir'] ) . '">' . $items[0]['content'] . '</div>';
+			return '<div class="nlwp-lang-text" lang="' . esc_attr( $items[0]['lang'] ) . '" dir="' . esc_attr( $items[0]['dir'] ) . '">' . $items[0]['html'] . '</div>';
 		}
 
 		$separator = isset( $settings['stacked']['description_separator'] ) ? $settings['stacked']['description_separator'] : 'none';
 		$parts     = array();
 
 		foreach ( $items as $item ) {
-			$parts[] = '<div class="nlwp-lang-text" lang="' . esc_attr( $item['lang'] ) . '" dir="' . esc_attr( $item['dir'] ) . '">' . $item['content'] . '</div>';
+			$parts[] = '<div class="nlwp-lang-text" lang="' . esc_attr( $item['lang'] ) . '" dir="' . esc_attr( $item['dir'] ) . '">' . $item['html'] . '</div>';
 		}
 
 		$glue = 'line' === $separator ? '<hr class="nlwp-lang-separator">' : '';
@@ -456,51 +319,9 @@ class Renderer {
 	 * @return string
 	 */
 	private static function setting_string_html( string $key, string $current_lang, string $mode, array $settings, bool $is_title = false ): string {
-		$codes          = 'stacked' === $mode ? array_column( Languages::all( true ), 'code' ) : array( $current_lang );
-		$default        = Languages::default_code();
-		$items          = array();
-		$seen           = array();
-
-		foreach ( $codes as $code ) {
-			$text      = Translations::get_setting_string( $key, $code, false );
-			$text_lang = $code;
-
-			if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
-				if ( 'stacked' === $mode ) {
-					if ( $code !== $default ) {
-						continue;
-					}
-					$text = Translations::builtin_string( $key );
-				} else {
-					$text_lang = $default;
-					$text      = Translations::get_setting_string( $key, $text_lang, false );
-					if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
-						$text = Translations::builtin_string( $key );
-					}
-				}
-			}
-
-			if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
-				continue;
-			}
-
-			$content = 'empty_text' === $key ? wp_kses_post( $text ) : esc_html( $text );
-
-			if ( 'stacked' === $mode ) {
-				$dedupe = trim( wp_strip_all_tags( $content ) );
-				if ( isset( $seen[ $dedupe ] ) ) {
-					continue;
-				}
-				$seen[ $dedupe ] = true;
-			}
-
-			$items[] = array(
-				'code'    => $code,
-				'content' => $content,
-				'lang'    => $text_lang,
-				'dir'     => Languages::dir( $text_lang ),
-			);
-		}
+		$codes    = 'stacked' === $mode ? array_column( Languages::all( true ), 'code' ) : array( $current_lang );
+		$fallback = 'stacked' === $mode ? Languages::default_code() : $current_lang;
+		$items    = Content::setting_string_items( $key, $codes, $fallback, $settings, 'empty_text' === $key, 'stacked' === $mode );
 
 		if ( empty( $items ) ) {
 			return '';
@@ -511,61 +332,50 @@ class Renderer {
 		}
 
 		$separator = isset( $settings['stacked']['separator'] ) ? (string) $settings['stacked']['separator'] : ' / ';
-		return implode( esc_html( $separator ), array_column( $items, 'content' ) );
+		return implode( esc_html( $separator ), array_column( $items, 'html' ) );
 	}
 
 	/**
-	 * Render a category label.
+	 * Render category label items.
 	 *
-	 * @param int    $term_id      Term ID, 0 for uncategorized.
-	 * @param string $current_lang Active language.
-	 * @param string $mode         Field mode.
-	 * @param array  $settings     Settings.
-	 * @param string $ui_mode      Interface string display mode.
+	 * @param array $items    Label items.
+	 * @param array $settings Settings.
 	 * @return string
 	 */
-	private static function category_label_html( int $term_id, string $current_lang, string $mode, array $settings, string $ui_mode ): string {
-		if ( ! $term_id ) {
-			return self::setting_string_html( 'uncategorized_label', $current_lang, $ui_mode, $settings );
+	private static function category_label_html( array $items, array $settings ): string {
+		if ( empty( $items ) ) {
+			return '';
 		}
 
-		if ( 'stacked' !== $mode ) {
-			return esc_html( Translations::get_term_label( $term_id, $current_lang ) );
-		}
-
-		$labels = array();
-		foreach ( Languages::all( true ) as $language ) {
-			$label = Translations::get_term_label( $term_id, $language['code'], $language['code'] === Languages::default_code() );
-			if ( '' !== trim( $label ) ) {
-				$labels[] = esc_html( $label );
-			}
+		if ( 1 === count( $items ) ) {
+			return $items[0]['html'];
 		}
 
 		$separator = isset( $settings['stacked']['separator'] ) ? (string) $settings['stacked']['separator'] : ' / ';
-		return implode( esc_html( $separator ), array_unique( $labels ) );
+		return implode( esc_html( $separator ), array_column( $items, 'html' ) );
 	}
 
 	/**
 	 * Render an event date range.
 	 *
-	 * @param int    $event_id     Event ID.
-	 * @param string $current_lang Active language.
-	 * @param array  $settings     Settings.
+	 * @param array|null $date     Start/end date array.
+	 * @param string     $lang     Active language.
+	 * @param array      $settings Settings.
 	 * @return string
 	 */
-	private static function event_date_html( int $event_id, string $current_lang, array $settings ): string {
-		$start = nlwp_sanitize_date( (string) get_post_meta( $event_id, '_nlwp_start_date', true ) );
-		if ( '' === $start ) {
+	private static function event_date_html( ?array $date, string $lang, array $settings ): string {
+		if ( empty( $date['start'] ) ) {
 			return '';
 		}
 
-		$end  = nlwp_sanitize_date( (string) get_post_meta( $event_id, '_nlwp_end_date', true ) );
-		$html = '<span class="nlwp-event-date"><time datetime="' . esc_attr( $start ) . '">' . esc_html( self::format_date( $start, $current_lang, $settings ) ) . '</time>';
+		$start = (string) $date['start'];
+		$end   = isset( $date['end'] ) ? (string) $date['end'] : '';
+		$html  = '<span class="nlwp-event-date"><time datetime="' . esc_attr( $start ) . '">' . esc_html( Content::format_date( $start, $lang, $settings ) ) . '</time>';
 
 		if ( ! empty( $settings['show_end_dates'] ) && '' !== $end && $end !== $start ) {
 			$separator = isset( $settings['end_date_separator'] ) ? (string) $settings['end_date_separator'] : '–';
 			$html     .= '<span class="nlwp-date-separator"> ' . esc_html( $separator ) . ' </span>';
-			$html     .= '<time datetime="' . esc_attr( $end ) . '">' . esc_html( self::format_date( $end, $current_lang, $settings ) ) . '</time>';
+			$html     .= '<time datetime="' . esc_attr( $end ) . '">' . esc_html( Content::format_date( $end, $lang, $settings ) ) . '</time>';
 		}
 
 		return $html . '</span>';
@@ -574,62 +384,31 @@ class Renderer {
 	/**
 	 * Render an attachment link.
 	 *
-	 * @param int    $event_id     Event ID.
-	 * @param string $current_lang Active language.
-	 * @param array  $settings     Settings.
-	 * @param string $ui_mode      Interface string display mode.
+	 * @param array|null $attachment Attachment data.
+	 * @param array      $settings   Settings.
 	 * @return string
 	 */
-	private static function attachment_html( int $event_id, string $current_lang, array $settings, string $ui_mode ): string {
-		if ( empty( $settings['show_attachments'] ) ) {
+	private static function attachment_html( ?array $attachment, array $settings ): string {
+		if ( empty( $attachment['url'] ) ) {
 			return '';
 		}
 
-		$attachment_id = absint( get_post_meta( $event_id, '_nlwp_attachment_id', true ) );
-		if ( ! $attachment_id ) {
-			return '';
+		$label = '';
+		if ( ! empty( $attachment['label_items'] ) ) {
+			$separator = isset( $settings['stacked']['separator'] ) ? (string) $settings['stacked']['separator'] : ' / ';
+			$label     = implode( esc_html( $separator ), array_column( $attachment['label_items'], 'html' ) );
 		}
 
-		$url = wp_get_attachment_url( $attachment_id );
-		if ( ! $url ) {
-			return '';
-		}
-
-		$label = self::setting_string_html( 'attachment_label', $current_lang, $ui_mode, $settings );
 		if ( '' === $label ) {
-			$label = __( 'Attachment', 'newsletter-wp-plugin' );
+			$label = esc_html__( 'Attachment', 'newsletter-wp-plugin' );
 		}
 
-		$name = get_the_title( $attachment_id );
-		if ( '' === $name ) {
-			$name = wp_basename( $url );
-		}
-
-		$style = 'button' === $settings['attachment_style'] ? 'nlwp-attachment-button' : 'nlwp-attachment-link';
+		$url    = (string) $attachment['url'];
+		$name   = (string) ( $attachment['name'] ?? '' );
+		$style  = 'button' === $settings['attachment_style'] ? 'nlwp-attachment-button' : 'nlwp-attachment-link';
 		$target = ! empty( $settings['attachment_new_tab'] ) ? ' target="_blank" rel="noopener noreferrer"' : '';
 
 		return '<p class="nlwp-attachment"><a class="' . esc_attr( $style ) . '" href="' . esc_url( $url ) . '"' . $target . '>' . $label . ': <span class="nlwp-attachment-name">' . esc_html( $name ) . '</span></a></p>';
-	}
-
-	/**
-	 * Format a date for a language.
-	 *
-	 * @param string $date        Y-m-d date.
-	 * @param string $lang        Language code.
-	 * @param array  $settings    Settings.
-	 * @return string
-	 */
-	private static function format_date( string $date, string $lang, array $settings ): string {
-		$language = Languages::get( $lang );
-		$format   = $language && '' !== $language['date_format'] ? $language['date_format'] : $settings['date_format'];
-
-		try {
-			$datetime = new \DateTimeImmutable( $date . ' 00:00:00', wp_timezone() );
-		} catch ( \Exception $e ) {
-			return $date;
-		}
-
-		return (string) wp_date( $format, $datetime->getTimestamp(), wp_timezone() );
 	}
 
 	/**

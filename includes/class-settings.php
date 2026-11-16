@@ -113,8 +113,27 @@ class Settings {
 				'logo_align'   => 'center',
 				'custom_css'   => '',
 			),
+			'email'                      => array(
+				'from_name'  => '',
+				'from_email' => '',
+				'reply_to'   => '',
+				'format'     => 'plain',
+				'formatting' => array(
+					'languages'                    => array(),
+					'primary_language'             => '',
+					'title_layout'                 => 'inline',
+					'title_separator'              => ' / ',
+					'title_labels'                 => false,
+					'label_format'                 => 'short',
+					'description_separator'        => 'none',
+					'description_custom_separator' => '',
+					'description_labels'           => false,
+				),
+			),
 			'strings'                    => array(
 				'attachment_label'    => array(),
+				'email_footer'        => array(),
+				'email_header'        => array(),
 				'empty_text'          => array(),
 				'fixed_title'         => array(),
 				'issue_date_label'    => array(),
@@ -195,7 +214,7 @@ class Settings {
 
 		$settings = wp_parse_args( $saved, $defaults );
 
-		foreach ( array( 'field_modes', 'stacked', 'appearance' ) as $key ) {
+		foreach ( array( 'field_modes', 'stacked', 'appearance', 'email' ) as $key ) {
 			$current          = is_array( $settings[ $key ] ?? null ) ? $settings[ $key ] : array();
 			$settings[ $key ] = wp_parse_args( $current, $defaults[ $key ] );
 		}
@@ -203,7 +222,13 @@ class Settings {
 		$colors = is_array( $settings['appearance']['colors'] ?? null ) ? $settings['appearance']['colors'] : array();
 		$settings['appearance']['colors'] = wp_parse_args( $colors, $defaults['appearance']['colors'] );
 
+		$email_formatting = is_array( $settings['email']['formatting'] ?? null ) ? $settings['email']['formatting'] : array();
+		$settings['email']['formatting'] = wp_parse_args( $email_formatting, $defaults['email']['formatting'] );
+
 		$settings['strings'] = is_array( $settings['strings'] ?? null ) ? $settings['strings'] : array();
+		foreach ( self::string_keys() as $key ) {
+			$settings['strings'][ $key ] = is_array( $settings['strings'][ $key ] ?? null ) ? $settings['strings'][ $key ] : array();
+		}
 
 		$rows = is_array( $settings['languages'] ?? null ) ? $settings['languages'] : array();
 		$settings['languages'] = self::normalize_languages( $rows );
@@ -311,7 +336,7 @@ class Settings {
 	 * @return string[]
 	 */
 	public static function string_keys(): array {
-		return array( 'attachment_label', 'empty_text', 'fixed_title', 'issue_date_label', 'uncategorized_label' );
+		return array( 'attachment_label', 'email_footer', 'email_header', 'empty_text', 'fixed_title', 'issue_date_label', 'uncategorized_label' );
 	}
 
 	/**
@@ -386,10 +411,14 @@ class Settings {
 			$settings['end_date_separator'] = isset( $input['end_date_separator'] ) ? sanitize_text_field( (string) $input['end_date_separator'] ) : $settings['end_date_separator'];
 
 			$raw_strings = isset( $input['strings'] ) && is_array( $input['strings'] ) ? $input['strings'] : array();
-			$strings     = array();
+			$strings     = is_array( $settings['strings'] ) ? $settings['strings'] : array();
 			foreach ( self::string_keys() as $key ) {
-				$strings[ $key ] = array();
-				$raw_key = isset( $raw_strings[ $key ] ) && is_array( $raw_strings[ $key ] ) ? $raw_strings[ $key ] : array();
+				if ( ! isset( $raw_strings[ $key ] ) || ! is_array( $raw_strings[ $key ] ) ) {
+					continue;
+				}
+
+				$values  = array();
+				$raw_key = $raw_strings[ $key ];
 				foreach ( $settings['languages'] as $language ) {
 					$code = $language['code'];
 					if ( ! isset( $raw_key[ $code ] ) ) {
@@ -397,9 +426,47 @@ class Settings {
 					}
 					$value = 'empty_text' === $key ? wp_kses_post( (string) $raw_key[ $code ] ) : sanitize_text_field( (string) $raw_key[ $code ] );
 					if ( '' !== trim( $value ) ) {
-						$strings[ $key ][ $code ] = $value;
+						$values[ $code ] = $value;
 					}
 				}
+				$strings[ $key ] = $values;
+			}
+			$settings['strings'] = $strings;
+		}
+
+		if ( '' === $tab || 'email' === $tab ) {
+			$email = isset( $input['email'] ) && is_array( $input['email'] ) ? $input['email'] : array();
+
+			$settings['email']['from_name'] = isset( $email['from_name'] ) ? sanitize_text_field( (string) $email['from_name'] ) : (string) $settings['email']['from_name'];
+			$settings['email']['from_email'] = isset( $email['from_email'] ) ? sanitize_email( (string) $email['from_email'] ) : (string) $settings['email']['from_email'];
+			$settings['email']['reply_to'] = isset( $email['reply_to'] ) ? sanitize_email( (string) $email['reply_to'] ) : (string) $settings['email']['reply_to'];
+
+			$format = isset( $email['format'] ) ? sanitize_key( (string) $email['format'] ) : (string) $settings['email']['format'];
+			$settings['email']['format'] = in_array( $format, array( 'plain', 'html' ), true ) ? $format : 'plain';
+
+			$formatting = isset( $email['formatting'] ) && is_array( $email['formatting'] ) ? $email['formatting'] : array();
+			$settings['email']['formatting'] = Email_Renderer::sanitize_formatting( $formatting, $settings );
+
+			$raw_strings = isset( $input['strings'] ) && is_array( $input['strings'] ) ? $input['strings'] : array();
+			$strings     = is_array( $settings['strings'] ) ? $settings['strings'] : array();
+			foreach ( array( 'email_header', 'email_footer' ) as $key ) {
+				if ( ! isset( $raw_strings[ $key ] ) || ! is_array( $raw_strings[ $key ] ) ) {
+					continue;
+				}
+
+				$values  = array();
+				$raw_key = $raw_strings[ $key ];
+				foreach ( $settings['languages'] as $language ) {
+					$code = $language['code'];
+					if ( ! isset( $raw_key[ $code ] ) ) {
+						continue;
+					}
+					$value = sanitize_textarea_field( (string) $raw_key[ $code ] );
+					if ( '' !== trim( $value ) ) {
+						$values[ $code ] = $value;
+					}
+				}
+				$strings[ $key ] = $values;
 			}
 			$settings['strings'] = $strings;
 		}

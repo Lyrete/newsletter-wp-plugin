@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Newsletter Publisher
  * Description: Publish multilingual newsletter issues on your website with configurable layouts, categories, events and appearance.
- * Version: 0.1.0
+ * Version: 0.2.0
  * Requires at least: 6.4
  * Requires PHP: 8.5
  * Author: Newsletter Publisher contributors
@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NLWP_VERSION', '0.1.0' );
+define( 'NLWP_VERSION', '0.2.0' );
 define( 'NLWP_FILE', __FILE__ );
 define( 'NLWP_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NLWP_URL', plugin_dir_url( __FILE__ ) );
@@ -28,11 +28,15 @@ require_once NLWP_DIR . 'includes/class-translations.php';
 require_once NLWP_DIR . 'includes/class-settings.php';
 require_once NLWP_DIR . 'includes/class-settings-page.php';
 require_once NLWP_DIR . 'includes/class-issue-selection.php';
+require_once NLWP_DIR . 'includes/class-content.php';
 require_once NLWP_DIR . 'includes/class-admin-assets.php';
 require_once NLWP_DIR . 'includes/class-admin-translations.php';
 require_once NLWP_DIR . 'includes/class-admin-events.php';
 require_once NLWP_DIR . 'includes/class-admin-issues.php';
 require_once NLWP_DIR . 'includes/class-renderer.php';
+require_once NLWP_DIR . 'includes/class-email-renderer.php';
+require_once NLWP_DIR . 'includes/class-email-sender.php';
+require_once NLWP_DIR . 'includes/class-admin-email.php';
 require_once NLWP_DIR . 'includes/class-shortcode.php';
 require_once NLWP_DIR . 'includes/class-block.php';
 require_once NLWP_DIR . 'includes/class-plugin.php';

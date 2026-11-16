@@ -68,6 +68,10 @@ class Admin_Assets {
 				'removeFile' => __( 'Remove', 'newsletter-wp-plugin' ),
 				'noFile'     => __( 'No file selected', 'newsletter-wp-plugin' ),
 				'confirm'    => __( 'Are you sure?', 'newsletter-wp-plugin' ),
+				'confirmSend' => __( 'Send this newsletter issue to all configured recipients?', 'newsletter-wp-plugin' ),
+				'copied'     => __( 'Copied', 'newsletter-wp-plugin' ),
+				'copyFailed' => __( 'Copy failed. Select the text and copy it manually.', 'newsletter-wp-plugin' ),
+				'downloadFailed' => __( 'Download failed.', 'newsletter-wp-plugin' ),
 			)
 		);
 	}

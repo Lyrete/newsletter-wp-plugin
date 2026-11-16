@@ -52,6 +52,7 @@ class Settings_Page {
 			'layout'     => __( 'Layout', 'newsletter-wp-plugin' ),
 			'appearance' => __( 'Appearance', 'newsletter-wp-plugin' ),
 			'categories' => __( 'Categories', 'newsletter-wp-plugin' ),
+			'email'      => __( 'Email', 'newsletter-wp-plugin' ),
 			'advanced'   => __( 'Advanced', 'newsletter-wp-plugin' ),
 		);
 	}
@@ -144,6 +145,9 @@ class Settings_Page {
 				break;
 			case 'appearance':
 				self::panel_appearance( $settings );
+				break;
+			case 'email':
+				self::panel_email( $settings );
 				break;
 			case 'advanced':
 				self::panel_advanced( $settings );
@@ -474,6 +478,131 @@ class Settings_Page {
 
 		echo '<h3>' . esc_html__( 'Custom CSS', 'newsletter-wp-plugin' ) . '</h3>';
 		echo '<p><textarea rows="8" class="large-text code" name="' . esc_attr( Settings::OPTION . '[appearance][custom_css]' ) . '">' . esc_textarea( (string) $appearance['custom_css'] ) . '</textarea></p>';
+	}
+
+	/**
+	 * Email panel.
+	 *
+	 * @param array $settings Current settings.
+	 * @return void
+	 */
+	private static function panel_email( array $settings ): void {
+		$email      = $settings['email'];
+		$formatting = Email_Renderer::settings_formatting( $settings );
+		$languages  = $settings['languages'];
+
+		echo '<h2>' . esc_html__( 'Email delivery', 'newsletter-wp-plugin' ) . '</h2>';
+		echo '<div class="notice notice-info inline nlwp-smtp-notice"><p>' . esc_html__( 'Email is sent with the WordPress wp_mail() function. Install and configure an SMTP or email delivery plugin for reliable sending. Newsletter Publisher does not configure mail transport.', 'newsletter-wp-plugin' ) . '</p></div>';
+
+		echo '<table class="form-table" role="presentation"><tbody>';
+
+		self::text_row( 'email[from_name]', __( 'From name', 'newsletter-wp-plugin' ), (string) $email['from_name'], 'text', __( 'Leave empty to use the WordPress default.', 'newsletter-wp-plugin' ) );
+		self::text_row( 'email[from_email]', __( 'From email', 'newsletter-wp-plugin' ), (string) $email['from_email'], 'email', __( 'Use an address allowed by your mail provider.', 'newsletter-wp-plugin' ) );
+		self::text_row( 'email[reply_to]', __( 'Reply-To email', 'newsletter-wp-plugin' ), (string) $email['reply_to'], 'email', '' );
+
+		self::select_row(
+			'email[format]',
+			__( 'Sending format', 'newsletter-wp-plugin' ),
+			(string) $email['format'],
+			array(
+				'plain' => __( 'Plain text', 'newsletter-wp-plugin' ),
+				'html'  => __( 'Minimal HTML', 'newsletter-wp-plugin' ),
+			),
+			__( 'Both plain text and minimal HTML are always generated for preview and export.', 'newsletter-wp-plugin' )
+		);
+
+		echo '</tbody></table>';
+
+		echo '<h2>' . esc_html__( 'Default email composition', 'newsletter-wp-plugin' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'These defaults prefill each issue compose screen. Change them per issue on the Email screen.', 'newsletter-wp-plugin' ) . '</p>';
+		echo '<table class="form-table" role="presentation"><tbody>';
+
+		echo '<tr><th scope="row">' . esc_html__( 'Languages in the email', 'newsletter-wp-plugin' ) . '</th><td>';
+		echo '<fieldset class="nlwp-email-languages">';
+		foreach ( $languages as $language ) {
+			$code = (string) $language['code'];
+			echo '<label class="nlwp-email-language"><input type="checkbox" name="' . esc_attr( self::field_name( 'email[formatting][languages][]' ) ) . '" value="' . esc_attr( $code ) . '"' . checked( in_array( $code, $formatting['languages'], true ), true, false ) . '> ';
+			echo '<span>' . esc_html( $language['label'] ) . ' <code>' . esc_html( $code ) . '</code></span></label>';
+		}
+		echo '</fieldset>';
+		echo '<p class="description">' . esc_html__( 'Selected languages are combined into one email. If none are selected, the primary language is used.', 'newsletter-wp-plugin' ) . '</p>';
+		echo '</td></tr>';
+
+		$primary_options = array();
+		foreach ( $languages as $language ) {
+			$primary_options[ (string) $language['code'] ] = $language['label'];
+		}
+		self::select_row( 'email[formatting][primary_language]', __( 'Primary language', 'newsletter-wp-plugin' ), (string) $formatting['primary_language'], $primary_options, __( 'The subject, header, footer and interface labels use the primary language.', 'newsletter-wp-plugin' ) );
+
+		self::select_row(
+			'email[formatting][title_layout]',
+			__( 'Title layout', 'newsletter-wp-plugin' ),
+			(string) $formatting['title_layout'],
+			array(
+				'inline' => __( 'Inline', 'newsletter-wp-plugin' ),
+				'block'  => __( 'Own line per language', 'newsletter-wp-plugin' ),
+			),
+			__( 'Applies to the issue title, category labels and event titles.', 'newsletter-wp-plugin' )
+		);
+
+		self::text_row( 'email[formatting][title_separator]', __( 'Title separator', 'newsletter-wp-plugin' ), (string) $formatting['title_separator'], 'text', '' );
+		self::checkbox_row( 'email[formatting][title_labels]', __( 'Prefix titles with a language label', 'newsletter-wp-plugin' ), ! empty( $formatting['title_labels'] ) );
+
+		self::select_row(
+			'email[formatting][label_format]',
+			__( 'Language label format', 'newsletter-wp-plugin' ),
+			(string) $formatting['label_format'],
+			array(
+				'short' => __( 'Short code (EN)', 'newsletter-wp-plugin' ),
+				'name'  => __( 'Language name', 'newsletter-wp-plugin' ),
+				'code'  => __( 'Code (en)', 'newsletter-wp-plugin' ),
+			),
+			''
+		);
+
+		self::select_row(
+			'email[formatting][description_separator]',
+			__( 'Description separator', 'newsletter-wp-plugin' ),
+			(string) $formatting['description_separator'],
+			array(
+				'none'   => __( 'Blank line', 'newsletter-wp-plugin' ),
+				'line'   => __( 'Horizontal line', 'newsletter-wp-plugin' ),
+				'custom' => __( 'Custom separator', 'newsletter-wp-plugin' ),
+			),
+			__( 'Applies to the issue introduction and event descriptions.', 'newsletter-wp-plugin' )
+		);
+
+		self::text_row( 'email[formatting][description_custom_separator]', __( 'Custom description separator', 'newsletter-wp-plugin' ), (string) $formatting['description_custom_separator'], 'text', '' );
+		self::checkbox_row( 'email[formatting][description_labels]', __( 'Prefix descriptions with a language label', 'newsletter-wp-plugin' ), ! empty( $formatting['description_labels'] ) );
+
+		echo '</tbody></table>';
+
+		echo '<h2>' . esc_html__( 'Email header and footer', 'newsletter-wp-plugin' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'Optional text added before and after the newsletter content. The header and footer use the primary email language.', 'newsletter-wp-plugin' ) . '</p>';
+		echo '<table class="form-table nlwp-string-table" role="presentation"><thead><tr><th>' . esc_html__( 'String', 'newsletter-wp-plugin' ) . '</th>';
+		foreach ( $languages as $language ) {
+			echo '<th><span title="' . esc_attr( $language['label'] ) . '">' . esc_html( $language['short'] ) . '</span></th>';
+		}
+		echo '</tr></thead><tbody>';
+
+		$strings = array(
+			'email_header' => __( 'Email header', 'newsletter-wp-plugin' ),
+			'email_footer' => __( 'Email footer', 'newsletter-wp-plugin' ),
+		);
+
+		foreach ( $strings as $key => $label ) {
+			echo '<tr><th scope="row">' . esc_html( $label ) . '<div class="nlwp-string-key"><code>' . esc_html( $key ) . '</code></div></th>';
+			foreach ( $languages as $language ) {
+				$code  = $language['code'];
+				$value = isset( $settings['strings'][ $key ][ $code ] ) ? (string) $settings['strings'][ $key ][ $code ] : '';
+				echo '<td><textarea rows="3" class="large-text" name="' . esc_attr( Settings::OPTION . '[strings][' . $key . '][' . $code . ']' ) . '">' . esc_textarea( $value ) . '</textarea></td>';
+			}
+			echo '</tr>';
+		}
+
+		echo '</tbody></table>';
+
+		echo '<p><a class="button" href="' . esc_url( Admin_Email::url() ) . '">' . esc_html__( 'Compose and send an issue', 'newsletter-wp-plugin' ) . '</a></p>';
 	}
 
 	/**

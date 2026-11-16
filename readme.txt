@@ -4,7 +4,7 @@ Tags: newsletter, events, multilingual, gutenberg, shortcode
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 8.5
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Publish multilingual newsletter issues on your website with configurable layouts
 
 == Description ==
 
-Newsletter Publisher turns newsletter issues into regular WordPress content. Create events, group them by category, and publish an issue through a shortcode or the Newsletter block. This version focuses on the published website side; email delivery is intentionally not included yet.
+Newsletter Publisher turns newsletter issues into regular WordPress content. Create events, group them by category, and publish an issue through a shortcode or the Newsletter block. You can also compose and send each issue as email, or export a plain-text or minimal HTML copy for manual sending.
 
 **Content**
 
@@ -40,13 +40,23 @@ Newsletter Publisher turns newsletter issues into regular WordPress content. Cre
 * Color presets, custom colors, typography, spacing, logo and custom CSS.
 * Shortcode and block overrides for issue, language and display mode.
 
+**Email**
+
+* Compose and send each issue from Newsletter → Email.
+* Choose which configured languages are included in the email and which one is primary.
+* Combine multilingual titles, category labels, event titles and descriptions with configurable separators and optional language labels.
+* Plain text by default, with an optional minimal HTML format.
+* Preview, copy and download the rendered message for manual sending.
+* Sends through `wp_mail()`; install an SMTP or email delivery plugin for reliable transport. Newsletter Publisher does not configure mail transport.
+
 == Installation ==
 
 1. Upload the `newsletter-wp-plugin` folder to `/wp-content/plugins/`.
 2. Activate the plugin through the Plugins screen.
-3. Open Newsletter → Settings and configure languages, layout and appearance.
+3. Open Newsletter → Settings and configure languages, layout, appearance and email defaults.
 4. Create events under Newsletter → Events.
 5. Create an issue under Newsletter → Newsletter Issues, then place `[nlwp_newsletter]` or the Newsletter block on a page.
+6. To send the issue, open Newsletter → Email, choose the issue, review the languages and formatting, then send or export a copy.
 
 == Usage ==
 
@@ -74,7 +84,11 @@ The same options are available in the Newsletter block sidebar.
 
 = Does this plugin send email? =
 
-No. This version publishes newsletter issues on the website. Email delivery is planned separately.
+Yes. Newsletter → Email composes an issue and sends it with the WordPress `wp_mail()` function. Install and configure an SMTP or email delivery plugin for reliable sending; this plugin does not configure mail transport. You can also copy or download the rendered message and send it manually.
+
+= Which languages are included in an email? =
+
+Each issue can include one or more configured languages. The selected languages are combined into one email, and the primary language supplies the subject, header, footer and interface labels.
 
 = Are issue pages public? =
 
@@ -93,8 +107,16 @@ The default language is used as a fallback by default. You can also hide events 
 1. Newsletter settings, languages tab.
 2. Issue editor with event selection.
 3. Published newsletter with categories and accordion events.
+4. Email compose screen with language and formatting controls.
 
 == Changelog ==
+
+= 0.2.0 =
+* Added per-issue email composition, preview, send, copy and download.
+* Added configurable email languages, primary language and multilingual title/description formatting.
+* Added email sender settings, per-issue recipients, test sends and send history.
+* Refactored shared content building so the website and email renderers use the same data.
+* Email is sent through `wp_mail()` and requires an external SMTP or email delivery plugin.
 
 = 0.1.0 =
 * Initial website-side release: issues, events, categories, multilingual content, shortcode and block.

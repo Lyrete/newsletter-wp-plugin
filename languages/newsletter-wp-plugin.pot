@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Newsletter Publisher 0.1.0\n"
+"Project-Id-Version: Newsletter Publisher 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/newsletter-wp-plugin\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-14T17:41:51+00:00\n"
+"POT-Creation-Date: 2026-11-16T11:05:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: newsletter-wp-plugin\n"
@@ -52,6 +52,335 @@ msgstr ""
 msgid "Are you sure?"
 msgstr ""
 
+#: includes/class-admin-assets.php:71
+msgid "Send this newsletter issue to all configured recipients?"
+msgstr ""
+
+#: includes/class-admin-assets.php:72
+msgid "Copied"
+msgstr ""
+
+#: includes/class-admin-assets.php:73
+msgid "Copy failed. Select the text and copy it manually."
+msgstr ""
+
+#: includes/class-admin-assets.php:74
+msgid "Download failed."
+msgstr ""
+
+#: includes/class-admin-email.php:40
+#: includes/class-admin-email.php:80
+msgid "Newsletter email"
+msgstr ""
+
+#: includes/class-admin-email.php:41
+#: includes/class-admin-email.php:371
+#: includes/class-admin-email.php:425
+#: includes/class-settings-page.php:55
+msgid "Email"
+msgstr ""
+
+#: includes/class-admin-email.php:86
+#: includes/class-admin-email.php:329
+#: includes/class-email-sender.php:62
+#: includes/class-email-sender.php:118
+msgid "Invalid newsletter issue."
+msgstr ""
+
+#: includes/class-admin-email.php:88
+#: includes/class-admin-email.php:332
+#: includes/class-admin-issues.php:320
+msgid "You are not allowed to edit this issue."
+msgstr ""
+
+#: includes/class-admin-email.php:119
+msgid "No newsletter issues have been created yet."
+msgstr ""
+
+#: includes/class-admin-email.php:124
+#: blocks/newsletter/index.js:64
+msgid "Issue"
+msgstr ""
+
+#: includes/class-admin-email.php:125
+msgid "Status"
+msgstr ""
+
+#: includes/class-admin-email.php:126
+#: includes/class-admin-issues.php:89
+msgid "Issue date"
+msgstr ""
+
+#: includes/class-admin-email.php:127
+#: includes/class-admin-email.php:184
+msgid "Recipients"
+msgstr ""
+
+#: includes/class-admin-email.php:128
+msgid "Last sent"
+msgstr ""
+
+#: includes/class-admin-email.php:129
+msgid "Actions"
+msgstr ""
+
+#: includes/class-admin-email.php:142
+msgid "Not sent"
+msgstr ""
+
+#: includes/class-admin-email.php:143
+msgid "Compose"
+msgstr ""
+
+#: includes/class-admin-email.php:168
+#: includes/class-post-types.php:50
+msgid "All issues"
+msgstr ""
+
+#: includes/class-admin-email.php:174
+msgid "The compose form saves the email settings and sends from the same values, so the sent email matches this preview. Plain text and minimal HTML are always generated."
+msgstr ""
+
+#: includes/class-admin-email.php:186
+msgid "One address per line, or separate addresses with commas. Recipients are sent as Bcc."
+msgstr ""
+
+#: includes/class-admin-email.php:189
+msgid "Subject"
+msgstr ""
+
+#: includes/class-admin-email.php:191
+msgid "Leave empty to use the issue title in the primary email language."
+msgstr ""
+
+#: includes/class-admin-email.php:194
+msgid "Email format"
+msgstr ""
+
+#: includes/class-admin-email.php:195
+#: includes/class-admin-email.php:298
+#: includes/class-settings-page.php:509
+msgid "Minimal HTML"
+msgstr ""
+
+#: includes/class-admin-email.php:195
+#: includes/class-admin-email.php:288
+#: includes/class-settings-page.php:508
+msgid "Plain text"
+msgstr ""
+
+#: includes/class-admin-email.php:196
+msgid "The sending format is configured on the Email settings tab."
+msgstr ""
+
+#: includes/class-admin-email.php:199
+msgid "Languages in this email"
+msgstr ""
+
+#: includes/class-admin-email.php:207
+#: includes/class-settings-page.php:528
+msgid "Selected languages are combined into one email. If none are selected, the primary language is used."
+msgstr ""
+
+#: includes/class-admin-email.php:210
+#: includes/class-settings-page.php:535
+msgid "Primary language"
+msgstr ""
+
+#: includes/class-admin-email.php:216
+#: includes/class-settings-page.php:535
+msgid "The subject, header, footer and interface labels use the primary language."
+msgstr ""
+
+#: includes/class-admin-email.php:221
+msgid "Title formatting"
+msgstr ""
+
+#: includes/class-admin-email.php:222
+#: includes/class-settings-page.php:545
+msgid "Applies to the issue title, category labels and event titles."
+msgstr ""
+
+#: includes/class-admin-email.php:225
+#: includes/class-settings-page.php:357
+#: includes/class-settings-page.php:539
+msgid "Title layout"
+msgstr ""
+
+#: includes/class-admin-email.php:227
+#: includes/class-settings-page.php:357
+#: includes/class-settings-page.php:542
+msgid "Inline"
+msgstr ""
+
+#: includes/class-admin-email.php:228
+#: includes/class-settings-page.php:357
+#: includes/class-settings-page.php:543
+msgid "Own line per language"
+msgstr ""
+
+#: includes/class-admin-email.php:231
+#: includes/class-settings-page.php:358
+#: includes/class-settings-page.php:548
+msgid "Title separator"
+msgstr ""
+
+#: includes/class-admin-email.php:235
+#: includes/class-admin-email.php:263
+msgid "Language labels"
+msgstr ""
+
+#: includes/class-admin-email.php:236
+#: includes/class-settings-page.php:549
+msgid "Prefix titles with a language label"
+msgstr ""
+
+#: includes/class-admin-email.php:239
+#: includes/class-settings-page.php:356
+#: includes/class-settings-page.php:553
+msgid "Language label format"
+msgstr ""
+
+#: includes/class-admin-email.php:241
+#: includes/class-settings-page.php:356
+#: includes/class-settings-page.php:556
+msgid "Short code (EN)"
+msgstr ""
+
+#: includes/class-admin-email.php:242
+#: includes/class-settings-page.php:295
+#: includes/class-settings-page.php:356
+#: includes/class-settings-page.php:557
+msgid "Language name"
+msgstr ""
+
+#: includes/class-admin-email.php:243
+#: includes/class-settings-page.php:356
+#: includes/class-settings-page.php:558
+msgid "Code (en)"
+msgstr ""
+
+#: includes/class-admin-email.php:248
+msgid "Description formatting"
+msgstr ""
+
+#: includes/class-admin-email.php:249
+#: includes/class-settings-page.php:572
+msgid "Applies to the issue introduction and event descriptions."
+msgstr ""
+
+#: includes/class-admin-email.php:252
+#: includes/class-settings-page.php:361
+#: includes/class-settings-page.php:565
+msgid "Description separator"
+msgstr ""
+
+#: includes/class-admin-email.php:254
+#: includes/class-settings-page.php:568
+msgid "Blank line"
+msgstr ""
+
+#: includes/class-admin-email.php:255
+#: includes/class-settings-page.php:361
+#: includes/class-settings-page.php:569
+msgid "Horizontal line"
+msgstr ""
+
+#: includes/class-admin-email.php:256
+#: includes/class-admin-email.php:259
+#: includes/class-settings-page.php:570
+msgid "Custom separator"
+msgstr ""
+
+#: includes/class-admin-email.php:264
+#: includes/class-settings-page.php:576
+msgid "Prefix descriptions with a language label"
+msgstr ""
+
+#: includes/class-admin-email.php:270
+msgid "Send email"
+msgstr ""
+
+#: includes/class-admin-email.php:271
+msgid "Save and preview"
+msgstr ""
+
+#: includes/class-admin-email.php:274
+msgid "Send a test"
+msgstr ""
+
+#: includes/class-admin-email.php:276
+msgid "Test email address"
+msgstr ""
+
+#: includes/class-admin-email.php:277
+msgid "Send test"
+msgstr ""
+
+#: includes/class-admin-email.php:282
+msgid "Preview and export"
+msgstr ""
+
+#: includes/class-admin-email.php:283
+msgid "The preview uses the saved email settings. Choose Save and preview after changing the form."
+msgstr ""
+
+#: includes/class-admin-email.php:284
+#: includes/class-admin-email.php:394
+msgid "Subject:"
+msgstr ""
+
+#: includes/class-admin-email.php:291
+msgid "Copy plain text"
+msgstr ""
+
+#: includes/class-admin-email.php:292
+msgid "Download .txt"
+msgstr ""
+
+#: includes/class-admin-email.php:301
+msgid "Copy HTML"
+msgstr ""
+
+#: includes/class-admin-email.php:302
+msgid "Download .html"
+msgstr ""
+
+#. translators: 1: last send time, 2: last test time.
+#: includes/class-admin-email.php:310
+#: includes/class-admin-email.php:405
+#, php-format
+msgid "Last sent: %1$s. Last test: %2$s."
+msgstr ""
+
+#: includes/class-admin-email.php:311
+#: includes/class-admin-email.php:312
+#: includes/class-admin-email.php:406
+#: includes/class-admin-email.php:407
+msgid "never"
+msgstr ""
+
+#: includes/class-admin-email.php:353
+msgid "Email settings saved."
+msgstr ""
+
+#. translators: %d: number of recipients.
+#: includes/class-admin-email.php:398
+#, php-format
+msgid "%d recipient configured."
+msgid_plural "%d recipients configured."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-admin-email.php:410
+msgid "Compose email"
+msgstr ""
+
+#: includes/class-admin-email.php:436
+#: includes/class-settings-page.php:495
+msgid "Email is sent with the WordPress wp_mail() function. Install and configure an SMTP or email delivery plugin for reliable sending. Newsletter Publisher does not configure mail transport."
+msgstr ""
+
 #: includes/class-admin-events.php:39
 msgid "Event details"
 msgstr ""
@@ -83,7 +412,7 @@ msgid "Show the date with this event"
 msgstr ""
 
 #: includes/class-admin-events.php:76
-#: includes/class-renderer.php:600
+#: includes/class-renderer.php:403
 #: includes/class-translations.php:181
 msgid "Attachment"
 msgstr ""
@@ -94,10 +423,6 @@ msgstr ""
 
 #: includes/class-admin-issues.php:51
 msgid "Issue details"
-msgstr ""
-
-#: includes/class-admin-issues.php:89
-msgid "Issue date"
 msgstr ""
 
 #: includes/class-admin-issues.php:91
@@ -135,7 +460,7 @@ msgstr ""
 #: includes/class-admin-issues.php:105
 #: includes/class-post-types.php:76
 #: includes/class-post-types.php:78
-#: includes/class-settings-page.php:382
+#: includes/class-settings-page.php:386
 msgid "Events"
 msgstr ""
 
@@ -159,10 +484,6 @@ msgstr ""
 
 #: includes/class-admin-issues.php:314
 msgid "Invalid issue."
-msgstr ""
-
-#: includes/class-admin-issues.php:320
-msgid "You are not allowed to edit this issue."
 msgstr ""
 
 #: includes/class-admin-translations.php:39
@@ -194,14 +515,56 @@ msgid "Empty translations fall back to the default language unless fallback is h
 msgstr ""
 
 #: includes/class-block.php:93
-#: includes/class-settings-page.php:314
-#: includes/class-settings-page.php:337
+#: includes/class-settings-page.php:318
+#: includes/class-settings-page.php:341
 #: blocks/newsletter/index.js:18
 #: blocks/newsletter/index.js:21
 msgid "Site language"
 msgstr ""
 
-#: includes/class-plugin.php:68
+#: includes/class-email-renderer.php:177
+#: includes/class-post-types.php:41
+#: includes/class-translations.php:185
+#: blocks/newsletter/index.js:27
+#: blocks/newsletter/index.js:60
+msgid "Newsletter"
+msgstr ""
+
+#: includes/class-email-sender.php:70
+msgid "Add at least one valid recipient before sending."
+msgstr ""
+
+#: includes/class-email-sender.php:75
+msgid "This issue was just sent. Wait a minute before sending it again."
+msgstr ""
+
+#: includes/class-email-sender.php:80
+msgid "The email body is empty."
+msgstr ""
+
+#: includes/class-email-sender.php:114
+msgid "Enter a valid test email address."
+msgstr ""
+
+#. translators: %s: newsletter subject.
+#: includes/class-email-sender.php:125
+#, php-format
+msgid "[Test] %s"
+msgstr ""
+
+#: includes/class-email-sender.php:262
+msgid "WordPress could not send the email."
+msgstr ""
+
+#. translators: %d: number of recipients.
+#: includes/class-email-sender.php:273
+#, php-format
+msgid "Email sent to %d recipient."
+msgid_plural "Email sent to %d recipients."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-plugin.php:69
 #: includes/class-settings-page.php:36
 msgid "Settings"
 msgstr ""
@@ -212,13 +575,6 @@ msgstr ""
 
 #: includes/class-post-types.php:40
 msgid "Newsletter Issue"
-msgstr ""
-
-#: includes/class-post-types.php:41
-#: includes/class-translations.php:185
-#: blocks/newsletter/index.js:27
-#: blocks/newsletter/index.js:60
-msgid "Newsletter"
 msgstr ""
 
 #: includes/class-post-types.php:42
@@ -251,10 +607,6 @@ msgstr ""
 
 #: includes/class-post-types.php:49
 msgid "No newsletter issues found in Trash."
-msgstr ""
-
-#: includes/class-post-types.php:50
-msgid "All issues"
 msgstr ""
 
 #: includes/class-post-types.php:51
@@ -311,7 +663,7 @@ msgid "Event updated."
 msgstr ""
 
 #: includes/class-settings-page.php:35
-#: includes/class-settings-page.php:103
+#: includes/class-settings-page.php:104
 msgid "Newsletter settings"
 msgstr ""
 
@@ -320,7 +672,7 @@ msgid "General"
 msgstr ""
 
 #: includes/class-settings-page.php:51
-#: includes/class-settings-page.php:262
+#: includes/class-settings-page.php:266
 msgid "Languages"
 msgstr ""
 
@@ -337,508 +689,536 @@ msgstr ""
 msgid "Categories"
 msgstr ""
 
-#: includes/class-settings-page.php:55
+#: includes/class-settings-page.php:56
 msgid "Advanced"
 msgstr ""
 
-#: includes/class-settings-page.php:106
+#: includes/class-settings-page.php:107
 msgid "Settings saved."
 msgstr ""
 
-#: includes/class-settings-page.php:157
+#: includes/class-settings-page.php:161
 msgid "Save changes"
 msgstr ""
 
-#: includes/class-settings-page.php:168
+#: includes/class-settings-page.php:172
 msgid "Content defaults"
 msgstr ""
 
-#: includes/class-settings-page.php:173
+#: includes/class-settings-page.php:177
 msgid "Newsletter title"
 msgstr ""
 
-#: includes/class-settings-page.php:176
+#: includes/class-settings-page.php:180
 msgid "Use the issue title"
 msgstr ""
 
-#: includes/class-settings-page.php:177
+#: includes/class-settings-page.php:181
 msgid "Use a fixed title"
 msgstr ""
 
-#: includes/class-settings-page.php:178
+#: includes/class-settings-page.php:182
 msgid "Do not show a title"
 msgstr ""
 
-#: includes/class-settings-page.php:180
+#: includes/class-settings-page.php:184
 msgid "Applies to the title rendered above the newsletter."
 msgstr ""
 
-#: includes/class-settings-page.php:185
+#: includes/class-settings-page.php:189
 msgid "Title HTML tag"
 msgstr ""
 
-#: includes/class-settings-page.php:191
+#: includes/class-settings-page.php:195
 msgid "Show the issue introduction"
 msgstr ""
 
-#: includes/class-settings-page.php:192
+#: includes/class-settings-page.php:196
 msgid "Show the issue date"
 msgstr ""
 
-#: includes/class-settings-page.php:196
+#: includes/class-settings-page.php:200
 msgid "Default period length"
 msgstr ""
 
-#: includes/class-settings-page.php:199
+#: includes/class-settings-page.php:203
 msgid "Days used to prefill the period end date on new issues."
 msgstr ""
 
-#: includes/class-settings-page.php:204
-#: includes/class-settings-page.php:271
+#: includes/class-settings-page.php:208
+#: includes/class-settings-page.php:275
 msgid "Date format"
 msgstr ""
 
-#: includes/class-settings-page.php:207
+#: includes/class-settings-page.php:211
 msgid "PHP date format, for example j.n.Y."
 msgstr ""
 
-#: includes/class-settings-page.php:212
+#: includes/class-settings-page.php:216
 msgid "Date range separator"
 msgstr ""
 
-#: includes/class-settings-page.php:220
-#: includes/class-settings-page.php:332
+#: includes/class-settings-page.php:224
+#: includes/class-settings-page.php:336
 msgid "Interface strings"
 msgstr ""
 
-#: includes/class-settings-page.php:221
+#: includes/class-settings-page.php:225
 msgid "Leave a field empty to use the default language value or the built-in text."
 msgstr ""
 
-#: includes/class-settings-page.php:222
+#: includes/class-settings-page.php:226
+#: includes/class-settings-page.php:582
 msgid "String"
 msgstr ""
 
-#: includes/class-settings-page.php:229
+#: includes/class-settings-page.php:233
 msgid "Attachment link text"
 msgstr ""
 
-#: includes/class-settings-page.php:230
+#: includes/class-settings-page.php:234
 msgid "Empty newsletter text"
 msgstr ""
 
-#: includes/class-settings-page.php:231
+#: includes/class-settings-page.php:235
 msgid "Fixed newsletter title"
 msgstr ""
 
-#: includes/class-settings-page.php:232
+#: includes/class-settings-page.php:236
 msgid "Issue date label"
 msgstr ""
 
-#: includes/class-settings-page.php:233
+#: includes/class-settings-page.php:237
 msgid "Uncategorized events label"
 msgstr ""
 
-#: includes/class-settings-page.php:263
+#: includes/class-settings-page.php:267
 msgid "The default language uses the regular post title and content. Other languages are stored as translations. Clear the code, name and locale fields in a row to remove that language."
 msgstr ""
 
-#: includes/class-settings-page.php:266
+#: includes/class-settings-page.php:270
 msgid "Code"
 msgstr ""
 
-#: includes/class-settings-page.php:267
+#: includes/class-settings-page.php:271
 msgid "Name"
 msgstr ""
 
-#: includes/class-settings-page.php:268
+#: includes/class-settings-page.php:272
 msgid "Short label"
 msgstr ""
 
-#: includes/class-settings-page.php:269
+#: includes/class-settings-page.php:273
 msgid "Locale"
 msgstr ""
 
-#: includes/class-settings-page.php:270
+#: includes/class-settings-page.php:274
 msgid "Direction"
 msgstr ""
 
-#: includes/class-settings-page.php:272
+#: includes/class-settings-page.php:276
 msgid "Enabled"
 msgstr ""
 
-#: includes/class-settings-page.php:291
-#: includes/class-settings-page.php:352
-msgid "Language name"
-msgstr ""
-
-#: includes/class-settings-page.php:307
+#: includes/class-settings-page.php:311
 msgid "Default language"
 msgstr ""
 
-#: includes/class-settings-page.php:307
+#: includes/class-settings-page.php:311
 msgid "The default language is always enabled."
 msgstr ""
 
-#: includes/class-settings-page.php:311
+#: includes/class-settings-page.php:315
 #: blocks/newsletter/index.js:80
 msgid "Display mode"
 msgstr ""
 
-#: includes/class-settings-page.php:315
+#: includes/class-settings-page.php:319
 #: blocks/newsletter/index.js:22
 msgid "All languages, back to back"
 msgstr ""
 
-#: includes/class-settings-page.php:317
+#: includes/class-settings-page.php:321
 msgid "Site language shows only the active language. Back to back shows every configured language together."
 msgstr ""
 
-#: includes/class-settings-page.php:322
+#: includes/class-settings-page.php:326
 msgid "Per-field display mode"
 msgstr ""
 
-#: includes/class-settings-page.php:323
+#: includes/class-settings-page.php:327
 msgid "Inherit uses the global display mode above."
 msgstr ""
 
-#: includes/class-settings-page.php:327
+#: includes/class-settings-page.php:331
 msgid "Category labels"
 msgstr ""
 
-#: includes/class-settings-page.php:328
+#: includes/class-settings-page.php:332
 msgid "Event titles"
 msgstr ""
 
-#: includes/class-settings-page.php:329
+#: includes/class-settings-page.php:333
 msgid "Event descriptions"
 msgstr ""
 
-#: includes/class-settings-page.php:330
+#: includes/class-settings-page.php:334
 msgid "Issue title"
 msgstr ""
 
-#: includes/class-settings-page.php:331
+#: includes/class-settings-page.php:335
 msgid "Issue introduction"
 msgstr ""
 
-#: includes/class-settings-page.php:336
+#: includes/class-settings-page.php:340
 msgid "Inherit"
 msgstr ""
 
-#: includes/class-settings-page.php:338
+#: includes/class-settings-page.php:342
 msgid "Back to back"
 msgstr ""
 
-#: includes/class-settings-page.php:348
+#: includes/class-settings-page.php:352
 msgid "Back-to-back formatting"
 msgstr ""
 
-#: includes/class-settings-page.php:351
+#: includes/class-settings-page.php:355
 msgid "Show language labels"
 msgstr ""
 
-#: includes/class-settings-page.php:352
-msgid "Language label format"
-msgstr ""
-
-#: includes/class-settings-page.php:352
-msgid "Short code (EN)"
-msgstr ""
-
-#: includes/class-settings-page.php:352
-msgid "Code (en)"
-msgstr ""
-
-#: includes/class-settings-page.php:353
-msgid "Title layout"
-msgstr ""
-
-#: includes/class-settings-page.php:353
-msgid "Inline"
-msgstr ""
-
-#: includes/class-settings-page.php:353
-msgid "Own line per language"
-msgstr ""
-
-#: includes/class-settings-page.php:354
-msgid "Title separator"
-msgstr ""
-
-#: includes/class-settings-page.php:357
-msgid "Description separator"
-msgstr ""
-
-#: includes/class-settings-page.php:357
+#: includes/class-settings-page.php:361
 msgid "No separator"
 msgstr ""
 
-#: includes/class-settings-page.php:357
-msgid "Horizontal line"
-msgstr ""
-
-#: includes/class-settings-page.php:359
+#: includes/class-settings-page.php:363
 msgid "Hide events without a translation for the active language"
 msgstr ""
 
-#: includes/class-settings-page.php:371
+#: includes/class-settings-page.php:375
 msgid "Structure"
 msgstr ""
 
-#: includes/class-settings-page.php:374
+#: includes/class-settings-page.php:378
 msgid "Number events"
 msgstr ""
 
-#: includes/class-settings-page.php:375
+#: includes/class-settings-page.php:379
 msgid "Numbering"
 msgstr ""
 
-#: includes/class-settings-page.php:375
+#: includes/class-settings-page.php:379
 msgid "Continuous across categories"
 msgstr ""
 
-#: includes/class-settings-page.php:375
+#: includes/class-settings-page.php:379
 msgid "Restart for each category"
 msgstr ""
 
-#: includes/class-settings-page.php:376
+#: includes/class-settings-page.php:380
 msgid "Show category headings"
 msgstr ""
 
-#: includes/class-settings-page.php:377
+#: includes/class-settings-page.php:381
 msgid "Show empty categories"
 msgstr ""
 
-#: includes/class-settings-page.php:378
+#: includes/class-settings-page.php:382
 msgid "Category heading tag"
 msgstr ""
 
-#: includes/class-settings-page.php:385
+#: includes/class-settings-page.php:389
 msgid "Collapse events into an accordion"
 msgstr ""
 
-#: includes/class-settings-page.php:386
+#: includes/class-settings-page.php:390
 msgid "Open the first event"
 msgstr ""
 
-#: includes/class-settings-page.php:387
+#: includes/class-settings-page.php:391
 msgid "Open all events"
 msgstr ""
 
-#: includes/class-settings-page.php:388
+#: includes/class-settings-page.php:392
 msgid "Allow only one open event at a time"
 msgstr ""
 
-#: includes/class-settings-page.php:390
+#: includes/class-settings-page.php:394
 msgid "Show event dates"
 msgstr ""
 
-#: includes/class-settings-page.php:391
+#: includes/class-settings-page.php:395
 msgid "Show event end dates"
 msgstr ""
 
-#: includes/class-settings-page.php:395
+#: includes/class-settings-page.php:399
 msgid "Attachments and links"
 msgstr ""
 
-#: includes/class-settings-page.php:398
+#: includes/class-settings-page.php:402
 msgid "Show event attachments"
 msgstr ""
 
-#: includes/class-settings-page.php:399
+#: includes/class-settings-page.php:403
 msgid "Attachment style"
 msgstr ""
 
-#: includes/class-settings-page.php:399
+#: includes/class-settings-page.php:403
 msgid "Text link"
 msgstr ""
 
-#: includes/class-settings-page.php:399
+#: includes/class-settings-page.php:403
 msgid "Button"
 msgstr ""
 
-#: includes/class-settings-page.php:400
+#: includes/class-settings-page.php:404
 msgid "Open attachments in a new tab"
 msgstr ""
 
-#: includes/class-settings-page.php:401
+#: includes/class-settings-page.php:405
 msgid "Automatically link URLs in descriptions"
 msgstr ""
 
-#: includes/class-settings-page.php:415
+#: includes/class-settings-page.php:419
 msgid "Theme"
 msgstr ""
 
-#: includes/class-settings-page.php:420
+#: includes/class-settings-page.php:424
 msgid "Color preset"
 msgstr ""
 
-#: includes/class-settings-page.php:423
+#: includes/class-settings-page.php:427
 msgid "Light"
 msgstr ""
 
-#: includes/class-settings-page.php:424
+#: includes/class-settings-page.php:428
 msgid "Dark"
 msgstr ""
 
-#: includes/class-settings-page.php:425
+#: includes/class-settings-page.php:429
 msgid "Custom colors"
 msgstr ""
 
-#: includes/class-settings-page.php:432
+#: includes/class-settings-page.php:436
 msgid "Colors"
 msgstr ""
 
-#: includes/class-settings-page.php:436
+#: includes/class-settings-page.php:440
 msgid "Newsletter background"
 msgstr ""
 
-#: includes/class-settings-page.php:437
+#: includes/class-settings-page.php:441
 msgid "Cards and summaries"
 msgstr ""
 
-#: includes/class-settings-page.php:438
+#: includes/class-settings-page.php:442
 msgid "Body text"
 msgstr ""
 
-#: includes/class-settings-page.php:439
+#: includes/class-settings-page.php:443
 msgid "Muted text"
 msgstr ""
 
-#: includes/class-settings-page.php:440
+#: includes/class-settings-page.php:444
 msgid "Accent"
 msgstr ""
 
-#: includes/class-settings-page.php:441
+#: includes/class-settings-page.php:445
 msgid "Borders"
 msgstr ""
 
-#: includes/class-settings-page.php:442
+#: includes/class-settings-page.php:446
 msgid "Headings"
 msgstr ""
 
-#: includes/class-settings-page.php:455
+#: includes/class-settings-page.php:459
 msgid "Typography and spacing"
 msgstr ""
 
-#: includes/class-settings-page.php:458
+#: includes/class-settings-page.php:462
 msgid "Font family"
 msgstr ""
 
-#: includes/class-settings-page.php:458
+#: includes/class-settings-page.php:462
 msgid "Any CSS font-family value, or inherit."
 msgstr ""
 
-#: includes/class-settings-page.php:459
+#: includes/class-settings-page.php:463
 msgid "Base font size"
 msgstr ""
 
-#: includes/class-settings-page.php:459
+#: includes/class-settings-page.php:463
 msgid "For example 16px."
 msgstr ""
 
-#: includes/class-settings-page.php:460
+#: includes/class-settings-page.php:464
 msgid "Maximum width"
 msgstr ""
 
-#: includes/class-settings-page.php:461
+#: includes/class-settings-page.php:465
 msgid "Border radius"
 msgstr ""
 
-#: includes/class-settings-page.php:462
+#: includes/class-settings-page.php:466
 msgid "Spacing between events"
 msgstr ""
 
-#: includes/class-settings-page.php:466
+#: includes/class-settings-page.php:470
 msgid "Logo"
 msgstr ""
 
-#: includes/class-settings-page.php:468
+#: includes/class-settings-page.php:472
 msgid "Logo image"
 msgstr ""
 
-#: includes/class-settings-page.php:471
+#: includes/class-settings-page.php:475
 msgid "Logo width"
 msgstr ""
 
-#: includes/class-settings-page.php:472
+#: includes/class-settings-page.php:476
 msgid "Logo alignment"
 msgstr ""
 
-#: includes/class-settings-page.php:472
+#: includes/class-settings-page.php:476
 msgid "Left"
 msgstr ""
 
-#: includes/class-settings-page.php:472
+#: includes/class-settings-page.php:476
 msgid "Center"
 msgstr ""
 
-#: includes/class-settings-page.php:472
+#: includes/class-settings-page.php:476
 msgid "Right"
 msgstr ""
 
-#: includes/class-settings-page.php:475
+#: includes/class-settings-page.php:479
 msgid "Custom CSS"
 msgstr ""
 
-#: includes/class-settings-page.php:486
+#: includes/class-settings-page.php:494
+msgid "Email delivery"
+msgstr ""
+
+#: includes/class-settings-page.php:499
+msgid "From name"
+msgstr ""
+
+#: includes/class-settings-page.php:499
+msgid "Leave empty to use the WordPress default."
+msgstr ""
+
+#: includes/class-settings-page.php:500
+msgid "From email"
+msgstr ""
+
+#: includes/class-settings-page.php:500
+msgid "Use an address allowed by your mail provider."
+msgstr ""
+
+#: includes/class-settings-page.php:501
+msgid "Reply-To email"
+msgstr ""
+
+#: includes/class-settings-page.php:505
+msgid "Sending format"
+msgstr ""
+
+#: includes/class-settings-page.php:511
+msgid "Both plain text and minimal HTML are always generated for preview and export."
+msgstr ""
+
+#: includes/class-settings-page.php:516
+msgid "Default email composition"
+msgstr ""
+
+#: includes/class-settings-page.php:517
+msgid "These defaults prefill each issue compose screen. Change them per issue on the Email screen."
+msgstr ""
+
+#: includes/class-settings-page.php:520
+msgid "Languages in the email"
+msgstr ""
+
+#: includes/class-settings-page.php:575
+msgid "Custom description separator"
+msgstr ""
+
+#: includes/class-settings-page.php:580
+msgid "Email header and footer"
+msgstr ""
+
+#: includes/class-settings-page.php:581
+msgid "Optional text added before and after the newsletter content. The header and footer use the primary email language."
+msgstr ""
+
+#: includes/class-settings-page.php:589
+msgid "Email header"
+msgstr ""
+
+#: includes/class-settings-page.php:590
+msgid "Email footer"
+msgstr ""
+
+#: includes/class-settings-page.php:605
+msgid "Compose and send an issue"
+msgstr ""
+
+#: includes/class-settings-page.php:615
 msgid "Data"
 msgstr ""
 
-#: includes/class-settings-page.php:488
+#: includes/class-settings-page.php:617
 msgid "Delete all newsletter data when the plugin is uninstalled"
 msgstr ""
 
-#: includes/class-settings-page.php:490
+#: includes/class-settings-page.php:619
 msgid "Issues, events, categories and settings are removed permanently when this option is enabled and the plugin is deleted."
 msgstr ""
 
-#: includes/class-settings-page.php:492
+#: includes/class-settings-page.php:621
 msgid "Shortcode and block"
 msgstr ""
 
-#: includes/class-settings-page.php:493
+#: includes/class-settings-page.php:622
 msgid "Place a newsletter with the shortcode below or with the Newsletter block."
 msgstr ""
 
-#: includes/class-settings-page.php:495
+#: includes/class-settings-page.php:624
 msgid "Optional attributes: issue_id, language, display_mode, show_title, show_intro, class."
 msgstr ""
 
-#: includes/class-settings-page.php:519
+#: includes/class-settings-page.php:648
 msgid "Control the order of categories, hide categories from the newsletter, and translate category labels."
 msgstr ""
 
-#: includes/class-settings-page.php:525
+#: includes/class-settings-page.php:654
 msgid "Category"
 msgstr ""
 
-#: includes/class-settings-page.php:526
+#: includes/class-settings-page.php:655
 msgid "Slug"
 msgstr ""
 
-#: includes/class-settings-page.php:527
+#: includes/class-settings-page.php:656
 msgid "Order"
 msgstr ""
 
-#: includes/class-settings-page.php:528
+#: includes/class-settings-page.php:657
 msgid "Visible"
 msgstr ""
 
-#: includes/class-settings-page.php:562
+#: includes/class-settings-page.php:691
 msgid "Save categories"
 msgstr ""
 
-#: includes/class-settings-page.php:565
+#: includes/class-settings-page.php:694
 msgid "Category names in the default language come from the category term itself."
 msgstr ""
 
-#: includes/class-settings-page.php:566
+#: includes/class-settings-page.php:695
 msgid "Add or rename categories"
 msgstr ""
 
-#: includes/class-settings-page.php:576
+#: includes/class-settings-page.php:705
 msgid "You are not allowed to edit categories."
 msgstr ""
 
@@ -924,10 +1304,6 @@ msgstr ""
 
 #: blocks/newsletter/index.js:34
 msgid "events"
-msgstr ""
-
-#: blocks/newsletter/index.js:64
-msgid "Issue"
 msgstr ""
 
 #: blocks/newsletter/index.js:72

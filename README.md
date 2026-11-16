@@ -1,6 +1,17 @@
 # Newsletter Publisher
 
-A WordPress plugin for publishing multilingual newsletter issues on the website side. Issues and events are WordPress content, rendered through a shortcode or the Newsletter block.
+A WordPress plugin for publishing multilingual newsletter issues on the website and sending them as email. Issues and events are WordPress content, rendered through a shortcode or the Newsletter block.
+
+## Features
+
+- Multilingual issues, events, categories and interface strings.
+- Site-language or back-to-back language display, configurable per content type.
+- Native accordion layout, category ordering, date ranges and attachments.
+- Per-issue email composition from **Newsletter → Email**.
+- Choose email languages, primary language, title/description separators and optional language labels.
+- Plain-text email by default, with optional minimal HTML.
+- Preview, copy and download the rendered email for manual sending.
+- Sends with WordPress `wp_mail()`. Install and configure an SMTP or email delivery plugin for reliable transport; the plugin does not configure mail transport.
 
 ## Local WordPress test server
 

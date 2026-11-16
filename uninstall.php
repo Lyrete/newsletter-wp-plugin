@@ -47,3 +47,17 @@ if ( ! is_wp_error( $nlwp_terms ) ) {
 }
 
 delete_option( 'nlwp_settings' );
+
+global $wpdb;
+
+$nlwp_transients = $wpdb->get_col(
+	$wpdb->prepare(
+		"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+		$wpdb->esc_like( '_transient_nlwp_' ) . '%',
+		$wpdb->esc_like( '_transient_timeout_nlwp_' ) . '%'
+	)
+);
+
+foreach ( $nlwp_transients as $nlwp_transient ) {
+	delete_option( (string) $nlwp_transient );
+}

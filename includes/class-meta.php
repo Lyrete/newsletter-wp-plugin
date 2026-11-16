@@ -102,6 +102,28 @@ class Meta {
 				'type'              => 'array',
 				'sanitize_callback' => array( Translations::class, 'sanitize_issue_translations' ),
 			),
+			'_nlwp_email_recipients'  => array(
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_textarea_field',
+			),
+			'_nlwp_email_subject'     => array(
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+			),
+			'_nlwp_email_formatting'  => array(
+				'type'              => 'array',
+				'sanitize_callback' => static function ( $value ) {
+					return Email_Renderer::sanitize_formatting( $value );
+				},
+			),
+			'_nlwp_email_last_send'   => array(
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+			),
+			'_nlwp_email_last_test'   => array(
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+			),
 		);
 
 		foreach ( $issue_meta as $key => $args ) {
